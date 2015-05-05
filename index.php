@@ -1,20 +1,22 @@
 <?php
-        session_start();
-        require('lib/connect.php');
-        if (isset($_POST['login-username']) and isset($_POST['login-password'])) {
-            $username = $_POST['login-username'];
-            $password = $_POST['login-password'];
-            $query = "SELECT * FROM `users` WHERE username='$username' and password='$password'";
+    session_start();
+    require('lib/connect.php');
+    if (isset($_POST['login-username']) and isset($_POST['login-password'])) {
+        $username = $_POST['login-username'];
+        $password = $_POST['login-password'];
+        $query = "SELECT * FROM `users` WHERE username='$username' and password='$password'";
 
-            $result = mysql_query($query) or die(mysql_error());
-            $count = mysql_num_rows($result);
-            if ($count == 1) {
-                $_SESSION['login-username'] = $username;
-                header ("Location: pantry.php");
-            } else {
-                $msg = "Invalid login credentials!";
-            }
+        $result = mysql_query($query) or die(mysql_error());
+        $count = mysql_num_rows($result);
+        if ($count == 1) {
+            $_SESSION['login-username'] = $username;
+            $row = mysql_fetch_array($result);
+            $_SESSION['user-id'] = $row['id'];
+            header ("Location: pantry.php");
+        } else {
+            $msg = "Invalid login credentials!";
         }
+    }
 ?>
 
 <!DOCTYPE html>

@@ -1,147 +1,147 @@
 body {
-	background-color: #E0EEE0;
+    background-color: #E0EEE0;
 }
 
 #in-pantry-container {
-	padding-bottom: 90px;
+    padding-bottom: 90px;
 }
 
 #recently-expired-header, #in-pantry-header {
-	padding-left: 30px;
+    padding-left: 30px;
     text-shadow: 1px 1px 1px rgba(0,0,0,0.6);
     font-size: 2em;
     font-weight: 400;
 }
 
 #recently-expired-header {
-	margin-top: 60px;
+    margin-top: 60px;
 }
 
 #recently-expired-filter, #in-pantry-filter {
-	padding-left: 15px;
+    padding-left: 15px;
 }
 
 
 #recently-expired-filter a, #in-pantry-filter a {
-	text-decoration: none; 
-	padding: 5px 10px;
-	color: #666;
+    text-decoration: none; 
+    padding: 5px 10px;
+    color: #666;
 }
 
 #recently-expired-filter a.active, #in-pantry-filter a.active {
-	background: #A6D785;
+    background: #A6D785;
 }
 
 /* grid */
 #grid-wrapper {
-	clear: both; 
-	position: relative;
-	margin: 0;
-	padding: 0;
-	margin: 30px 20px 20px 20px;
-	margin-bottom: 0;
+    clear: both; 
+    position: relative;
+    margin: 0;
+    padding: 0;
+    margin: 30px 20px 20px 20px;
+    margin-bottom: 0;
 }
 
 #recently-expired-grid, #in-pantry-grid {
-	width: 90%;
+    width: 90%;
     margin: 0 auto;
 }
 
 .item, #add-item {
-	width: 128px; 
-	height: 128px; 
-	float: left; 
-	/*margin-right: 10px; */
-	margin-bottom: 30px; 
-	color: black; 
-	font-size: 14px; 
-	font-weight: 700;
-	text-align: center; 
-	line-height: 120px; 
-	border: 4px solid #666;
-	border-radius: 128px;
-	cursor: pointer; 
-	background-color: white; 
-	background-size: contain;
-	filter: none;
-  	-webkit-filter: grayscale(0%);
+    width: 128px; 
+    height: 128px; 
+    float: left; 
+    /*margin-right: 10px; */
+    margin-bottom: 30px; 
+    color: black; 
+    font-size: 14px; 
+    font-weight: 700;
+    text-align: center; 
+    line-height: 120px; 
+    border: 4px solid #666;
+    border-radius: 128px;
+    cursor: pointer; 
+    background-color: white; 
+    background-size: contain;
+    filter: none;
+    -webkit-filter: grayscale(0%);
 }
 
 /* Fruits */
 .pear {
-	background-image: url("../img/pear.jpg");
+    background-image: url("../img/pear.jpg");
 }
 
 .pineapple {
-	background-image: url("../img/pineapple.jpg");
+    background-image: url("../img/pineapple.jpg");
 }
 
 .kiwi {
-	background-image: url("../img/kiwi.jpg");
+    background-image: url("../img/kiwi.jpg");
 }
 
 .banana {
-	background-image: url("../img/banana.jpg");
+    background-image: url("../img/banana.jpg");
 }
 
 /* Meat & Proteins */
 .raw-salmon {
-	background-image: url("../img/raw-salmon.jpg");
+    background-image: url("../img/raw-salmon.jpg");
 }
 
 .frozen-chicken {
-	background-image: url("../img/frozen-chicken.jpg");
+    background-image: url("../img/frozen-chicken.jpg");
 }
 
 .cooked-beefsteak {
-	background-image: url("../img/cooked-beefsteak.jpg");
+    background-image: url("../img/cooked-beefsteak.jpg");
 }
 
 /*Confections*/
 .apple-pie {
-	background-image: url("../img/apple-pie.jpg");
+    background-image: url("../img/apple-pie.jpg");
 }
 
 .snickers {
-	background-image: url("../img/snickers.jpg");
+    background-image: url("../img/snickers.jpg");
 }
 
 /* Dairy */
 .milk {
-	background-image: url("../img/milk.jpg");
+    background-image: url("../img/milk.jpg");
 }
 
 .greek-yogurt {
-	background-image: url("../img/greek-yogurt.jpg");
+    background-image: url("../img/greek-yogurt.jpg");
 }
 
 /* Vegetables */
 .carrots {
-	background-image: url("../img/carrots.jpg");
+    background-image: url("../img/carrots.jpg");
 }
 
 .eggplant {
-	background-image: url("../img/eggplant.jpg");
+    background-image: url("../img/eggplant.jpg");
 }
 
 .spinach {
-	background-image: url("../img/spinach.jpg");
+    background-image: url("../img/spinach.jpg");
 }
 
 /* Grains & Beans */
 .bread {
-	background-image: url("../img/bread.jpg");
+    background-image: url("../img/bread.jpg");
 }
 
 /* Liquids */
 .orange-juice {
-	background-image: url("../img/orange-juice.jpg");
+    background-image: url("../img/orange-juice.jpg");
 }
 
 .item:hover {
     filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 3.5+ */
-  	filter: gray; /* IE6-9 */
-  	-webkit-filter: grayscale(100%); /* Chrome 19+ & Safari 6+ */
+    filter: gray; /* IE6-9 */
+    -webkit-filter: grayscale(100%); /* Chrome 19+ & Safari 6+ */
 }
 
 #add-item {
@@ -153,14 +153,14 @@ body {
 }
 
 .item:hover .description {
-	visibility: visible;
+    visibility: visible;
 }
 
 hr {
-	margin: 0 auto;
-	padding: 0;
-	width: 90%;
-	border: 0;
+    margin: 0 auto;
+    padding: 0;
+    width: 90%;
+    border: 0;
     height: 2px;
     background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.45), rgba(0,0,0,0));
     background-image:    -moz-linear-gradient(left, rgba(0,0,0,0), rgba(0,0,0,0.45), rgba(0,0,0,0));
@@ -170,72 +170,84 @@ hr {
 
 /* Modal */
 .modal-content {
- 	background-color: #f8f8f8;
+    background-color: #f8f8f8;
 }
 
 .modal-body {
-	background-color: #fff;
-	font-size: 14px;
+    background-color: #fff;
+    font-size: 14px;
 }
 
 .modal-header h3, .modal-header h5 {
-	padding: 0;
-	margin: 0;
+    padding: 0;
+    margin: 0;
+}
+
+/* View Item Modal */
+#view-item-container {
+    padding: 20px 0;
+    font-size: 15px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#view-item-container p {
+    margin-bottom: 0;
 }
 
 /* Modal Step 1: Entry Method */
 .btn-entry-method {
-	width: 200px;
+    width: 200px;
 }
 
 .entry-method-outer-container {
-	height: 200px;
-	margin: 0 auto;
-	text-align: center;
+    height: 200px;
+    margin: 0 auto;
+    text-align: center;
 }
 
 .entry-method-inner-container {
-	position: relative; 
-	top: 40%; 
-	transform: translateY(-60%);
+    position: relative; 
+    top: 40%; 
+    transform: translateY(-60%);
 }
 
 .empty-space {
-	width: 30px;
-	display: inline-block;
-	height: auto;
+    width: 30px;
+    display: inline-block;
+    height: auto;
 }
 
 /* Modal Steps 2 and 3: Item Information */
 .form-label {
-	padding-right: 30px;
+    padding-right: 30px;
 }
 
 #item-info-container {
-	height: 350px; 
-	width: 250px;
-	padding-top: 30px;
-	margin: 0 auto;
-	text-align: left;
+    height: 350px; 
+    width: 250px;
+    padding-top: 30px;
+    margin: 0 auto;
+    text-align: left;
 }
 
 #item-info-container .btn-group {
-	display: inline;
+    display: inline;
 }
 
 td.active {
-	background-image: none !important;
-	background-color: #f8f8f8 !important;
-	color: black !important;
-	text-shadow: none !important;
+    background-image: none !important;
+    background-color: #f8f8f8 !important;
+    color: black !important;
+    text-shadow: none !important;
 }
 
 .input-group {
-	width: 120px;
+    width: 120px;
 }
 
 .input-group-btn {
-	padding-right: none;
+    padding-right: none;
 }
 
 .multiselect.btn {
@@ -247,29 +259,29 @@ td.active {
 }
 
 .multiselect-selected-text {
-	float: left;
-	font-weight: 300;
+    float: left;
+    font-weight: 300;
 }
 
 .btn-number-selector {
-	background-image: none;
+    background-image: none;
     background-color: #f8f8f8;
 }
 
 .btn-modal-footer {
-	background-color: #f8f8f8;
-	border: 2px solid #999;
-	color: #999;
+    background-color: #f8f8f8;
+    border: 2px solid #999;
+    color: #999;
 }
 
 .btn-modal-footer:hover {
-	background-color: #999;
-	color: white;
+    background-color: #999;
+    color: white;
 }
 
 /* Footer */
 .small-footer {
-	height: 80px;
-	padding: 20px 0;
-	margin-top: 100px;
+    height: 80px;
+    padding: 20px 0;
+    margin-top: 100px;
 }

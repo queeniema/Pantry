@@ -1,3 +1,16 @@
+<?php
+    session_start();
+    require('lib/connect.php');
+
+    $userid = $_SESSION['user-id'];
+    // SQL query to retrieve all items in the database associated wih the current user
+    $query = "SELECT I.item_name, I.expiration_date, I.quantity, I.categories, I.storage_env 
+                FROM items I
+                WHERE I.user_id = $userid;
+                ORDER BY I.expiration_date DESC";
+    $result = mysql_query($query) or die(mysql_error());
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -76,17 +89,27 @@
             });
 
             /* handle adding a new item */
-            $(document.body).on('click', '#btn-submit', function() {
-                // delete the add item circle
-                var $addItem = $('#add-item');
-                $('#in-pantry-grid').shuffle('remove', $addItem);
+            $("button#btn-submit").click(function(){
+                $.ajax({
+                    type: "POST",
+                    url: "process.php",
+                    data: $('form.modal').serialize(),
+                    success: function(response){
+                        // delete the add item circle
+                        var $addItem = $('#add-item');
+                        $('#in-pantry-grid').shuffle('remove', $addItem);
 
-                // append a new item and the add item circle to the grid
-                var $newItem = $("<div class=\"item green circle remove\" data-groups='[\"all\", \"letters\", \"green\", \"circle\"]'>" + "an item" + "</div>");
-                var $addItem = $("<div class=\"item circle remove\" id=\"add-item\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#add-item-modal\"></div>");
-                $items = $newItem.add($addItem);
-                $('#in-pantry-grid').append($items);
-                $('#in-pantry-grid').shuffle('appended', $items);
+                        // append a new item and the add item circle to the grid
+                        var $newItem = $("<div class=\"item green circle remove\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#view-item-modal\">" + response + "</div>");
+                        var $addItem = $("<div class=\"item circle remove\" id=\"add-item\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#add-item-modal\"></div>");
+                        $items = $newItem.add($addItem);
+                        $('#in-pantry-grid').append($items);
+                        $('#in-pantry-grid').shuffle('appended', $items);
+                    },
+                    error: function(){
+                        alert("failure");
+                    }
+                });
             });
 
             /* reset the modal to step 1 and remove form data */
@@ -94,9 +117,25 @@
                 $(this).removeData('bs.modal');
                 sendEvent('#add-item-modal', 1);
                 $("form").trigger("reset");
+            });
 
+            /* populate item data when clicked */
+            $('#view-item-modal').on('show.bs.modal', function(e) {
+                // get data-item-XXX attributes of the clicked element
+                var $itemName           = $(e.relatedTarget).data('item-name');
+                var $itemExpirationDate = $(e.relatedTarget).data('item-expiration-date');
+                var $itemQuantity       = $(e.relatedTarget).data('item-quantity');
+                var $itemCategories     = $(e.relatedTarget).data('item-categories');
+                var $itemStorageEnv     = $(e.relatedTarget).data('item-storage-env');
+                // fill in the item's info
+                document.getElementById("item-name").innerHTML              = $itemName;
+                document.getElementById("item-expiration-date").innerHTML   = $itemExpirationDate;
+                document.getElementById("item-quantity").innerHTML          = $itemQuantity;
+                document.getElementById("item-categories").innerHTML        = $itemCategories;
+                document.getElementById("item-storage-env").innerHTML       = $itemStorageEnv;
             });
         });
+            
     </script>
 
     <div id="wrapper">
@@ -183,27 +222,49 @@
 
         <div id="grid-wrapper">
             <div id="in-pantry-grid" class="row">
-                <div class="item pear"              data-groups='["all", "fruits"]'>            <span class="description">Pear</span></div>
-                <div class="item raw-salmon"        data-groups='["all", "meat-proteins"]'>     <span class="description">Raw Salmon</span></div>
-                <div class="item milk"              data-groups='["all", "dairy", "liquids"]'>  <span class="description">Milk</span></div>
-                <div class="item carrots"           data-groups='["all", "vegetables"]'>        <span class="description">Carrots</span></div>
-                <div class="item apple-pie"         data-groups='["all", "sweets"]'>            <span class="description">Apple Pie</span></div>
-                <div class="item pineapple"         data-groups='["all", "fruits"]'>            <span class="description">Pineapple</span></div>
-                <div class="item bread"             data-groups='["all", "grains-beans"]'>      <span class="description">Bread</span></div>
-                <div class="item frozen-chicken"    data-groups='["all", "meat-proteins"]'>     <span class="description">Frozen Chicken</span></div>
-                <div class="item eggplant"          data-groups='["all", "vegetables"]'>        <span class="description">Eggplant</span></div>
-                <div class="item kiwi"              data-groups='["all", "fruits"]'>            <span class="description">Kiwi</span></div>
-                <div class="item cooked-beefsteak"  data-groups='["all", "meat-proteins"]'>     <span class="description">Cooked Beef Steak</span></div>
-                <div class="item greek-yogurt"      data-groups='["all", "dairy"]'>             <span class="description">Greek Yogurt</span></div>
-                <div class="item banana"            data-groups='["all", "fruits"]'>            <span class="description">Banana</span></div>
-                <div class="item orange-juice"      data-groups='["all", "liquids"]'>           <span class="description">Orange Juice</span></div>
-                <div class="item spinach"           data-groups='["all", "vegetables"]'>        <span class="description">Spinach</span></div>
-                <div class="item snickers"          data-groups='["all", "sweets"]'>            <span class="description">Snickers</span></div>
-                <div class="item" id="add-item"     data-groups='["all"]' data-toggle="modal" data-target="#add-item-modal"></div>
+                <!-- Populate grid dynamically based on items in the database -->
+                <?php while($row = mysql_fetch_assoc($result)) { ?>
+                    <div class="item pear" 
+                        data-item-id                =   "<?php echo $row['item_id']; ?>"
+                        data-item-name              =   "<?php echo $row['item_name']; ?>" 
+                        data-item-expiration-date   =   "<?php echo $row['expiration_date']; ?>" 
+                        data-item-quantity          =   "<?php echo $row['quantity']; ?>" 
+                        data-item-categories        =   "<?php echo $row['categories']; ?>" 
+                        data-item-storage-env       =   "<?php echo $row['storage_env']; ?>" 
+                        data-groups                 =   '["all", "meat-proteins"]'
+                        data-toggle                 =   "modal"
+                        data-target                 =   "#view-item-modal">
+                        <span class="description"><?php echo $row['item_name']; ?></span>
+                    </div>
+                <?php } ?>
+                <div class="item" id="add-item" data-groups='["all"]' data-toggle="modal" data-target="#add-item-modal"></div>
             </div>
         </div>
     </div>
 
+    <!-- View item modal -->
+    <div class="modal fade" id="view-item-modal" tabindex="-1" role="dialog" aria-labelledby="view-item-modal-label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" id="item-name"></h4>
+                </div>
+                <div class="modal-body">
+                    <div id="view-item-container">
+                        <p>Expiration Date: <span id="item-expiration-date"></span></p><br/>
+                        <p>Quantity: <span id="item-quantity"></span></p><br/>
+                        <p>Categories: <span id="item-categories"></span></p><br/>
+                        <p>Storage Environment: <span id="item-storage-env"></span></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-modal-footer" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add item modal -->
     <form class="modal multi-step" id="add-item-modal">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -223,55 +284,51 @@
                 </div>
                 <div class="modal-body step-2" data-step="2">
                     <div class="container-fluid">
-                        <form id="item-info-form-1" class="" action="#">
-                            <div id="item-info-container">
-                                <span class="form-label">Item Name:</span>
-                                <br/>
-                                <input class="form-control" type="text" name="item-name" id="item-name" required/>
-                                <br/>
+                        <div id="item-info-container">
+                            <span class="form-label">Item Name:</span>
+                            <br/>
+                            <input class="form-control" type="text" name="item-name" id="item-name" required/>
+                            <br/>
 
-                                <span class="form-label">Expiration Date (if any):</span>
-                                <br/>
-                                <input class="form-control" name="expiration-date" type="text" id="bs-datepicker">
-                                <br/>
-                            </div>
-                        </form>
+                            <span class="form-label">Expiration Date (if any):</span>
+                            <br/>
+                            <input class="form-control" name="expiration-date" type="text" id="bs-datepicker">
+                            <br/>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-body step-3" data-step="3">
                     <div class="container-fluid">
-                        <form id="item-info-form-2" class="" action="#">
-                            <div id="item-info-container">
-                                <span class="form-label">Quantity:</span>
-                                <input id="quantity-input" name= "quantity" class="form-control" type="number" value="1" min="1" max="10" />
-                                <br/>
+                        <div id="item-info-container">
+                            <span class="form-label">Quantity:</span>
+                            <input id="quantity-input" name= "quantity" class="form-control" type="number" value="1" min="1" max="10" />
+                            <br/>
 
-                                <span class="form-label">Categor(ies):</span>
-                                <br/>
-                                <div class="btn-group" style="width: 200px">
-                                    <select name="food-categories" id="select-food-catagories" multiple="multiple">
-                                        <option value="dairy">Dairy</option>
-                                        <option value="fruits">Fruits</option>
-                                        <option value="grains-beans">Grains &amp; Beans</option>
-                                        <option value="meat-proteins">Meat &amp; Proteins</option>
-                                        <option value="sweets">Sweets</option>
-                                        <option value="vegetables">Vegetables</option>
-                                        <option value="liquids">Liquids</option>
-                                    </select>
-                                </div>
-                                <br/><br/><br/>
-
-                                <span class="form-label">Storage Environment:</span>
-                                <br/>
-                                <div class="btn-group" style="width: 200px">
-                                    <select name="storage-env" id="select-storage-env">
-                                        <option value="refrigerator">Refrigerator</option>
-                                        <option value="freezer">Freezer</option>
-                                        <option value="pantry">Pantry</option>
-                                    </select>
-                                </div>
+                            <span class="form-label">Categor(ies):</span>
+                            <br/>
+                            <div class="btn-group" style="width: 200px">
+                                <select name="food-categories[]" id="select-food-catagories" multiple="multiple">
+                                    <option value="dairy">Dairy</option>
+                                    <option value="fruits">Fruits</option>
+                                    <option value="grains-beans">Grains &amp; Beans</option>
+                                    <option value="meat-proteins">Meat &amp; Proteins</option>
+                                    <option value="sweets">Sweets</option>
+                                    <option value="vegetables">Vegetables</option>
+                                    <option value="liquids">Liquids</option>
+                                </select>
                             </div>
-                        </form>
+                            <br/><br/><br/>
+
+                            <span class="form-label">Storage Environment:</span>
+                            <br/>
+                            <div class="btn-group" style="width: 200px">
+                                <select name="storage-env" id="select-storage-env">
+                                    <option value="refrigerator">Refrigerator</option>
+                                    <option value="freezer">Freezer</option>
+                                    <option value="pantry">Pantry</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
