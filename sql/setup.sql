@@ -6,6 +6,14 @@ CREATE TABLE IF NOT EXISTS `users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
+CREATE TABLE IF NOT EXISTS `environments` (
+    `env_id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id` int(11) NOT NULL,
+    `temperature` int(11) NOT NULL,
+    PRIMARY KEY (`env_id`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
 CREATE TABLE IF NOT EXISTS `items` (
     `item_id` int(11) NOT NULL AUTO_INCREMENT,
     `user_id` int(11) NOT NULL,
@@ -13,7 +21,8 @@ CREATE TABLE IF NOT EXISTS `items` (
     `expiration_date` date NULL,
     `quantity` int(11) NOT NULL,
     `categories` varchar(255) NOT NULL,
-    `storage_env` varchar(255) NOT NULL,
+    `env_id` int(11) NOT NULL,
     PRIMARY KEY (`item_id`),
-    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`env_id`) REFERENCES `environments`(`env_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
