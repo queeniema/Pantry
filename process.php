@@ -14,10 +14,12 @@
         }
         $foodcategories = implode(",", $foodcategories);
 
-        $query = "INSERT INTO `items`(`user_id`, `item_name`, `expiration_date`, `quantity`, `categories`, `storage_env`)
+        $query = "INSERT INTO `items`(`user_id`, `item_name`, `expiration_date`, `quantity`, `categories`, `env_id`)
                     VALUES ('$userid', '$name', '$expirationdate', '$quantity', '$foodcategories', '$storageenv')";
         $result = mysql_query($query) or die(mysql_error());
 
         echo $name;
     }
+
+
 ?>

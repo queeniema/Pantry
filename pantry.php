@@ -4,11 +4,15 @@
 
     $userid = $_SESSION['user-id'];
     // SQL query to retrieve all items in the database associated wih the current user
-    $query = "SELECT I.item_name, I.expiration_date, I.quantity, I.categories, I.storage_env
-                FROM items I
-                WHERE I.user_id = " . $userid . "
+    $query = "SELECT I.item_name, I.expiration_date, I.quantity, I.categories, E.env_name
+                FROM items I, environments E
+                WHERE I.user_id = " . $userid . " AND I.env_id = E.env_id
                 ORDER BY I.expiration_date DESC";
-    $result = mysql_query($query) or die(mysql_error());
+    $items_result = mysql_query($query) or die(mysql_error());
+
+    // SQL query to retrieve all storange environments in the database associated wih the current user
+    $query = "SELECT * FROM environments WHERE user_id = ". $userid;
+    $envs_result = mysql_query($query) or die(mysql_error());
 ?>
 
 <!DOCTYPE html>
@@ -28,7 +32,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/landing-page.css" type="text/css">
     <link rel="stylesheet" href="css/pantry-page.css" type="text/css">
-    <!-- Custom Fonts -->
+    <!-- Custom Fonts --t
     <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css" type="text/css">
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:100,300,500,700" type="text/css">
     <!-- jQuery libraries -->
@@ -223,14 +227,14 @@
         <div id="grid-wrapper">
             <div id="in-pantry-grid" class="row">
                 <!-- Populate grid dynamically based on items in the database -->
-                <?php while($row = mysql_fetch_assoc($result)) { ?>
+                <?php while($row = mysql_fetch_assoc($items_result)) { ?>
                     <div class="item pear"
                         data-item-id                =   "<?php echo $row['item_id']; ?>"
                         data-item-name              =   "<?php echo $row['item_name']; ?>"
                         data-item-expiration-date   =   "<?php echo $row['expiration_date']; ?>"
                         data-item-quantity          =   "<?php echo $row['quantity']; ?>"
                         data-item-categories        =   "<?php echo $row['categories']; ?>"
-                        data-item-storage-env       =   "<?php echo $row['storage_env']; ?>"
+                        data-item-storage-env       =   "<?php echo $row['env_name']; ?>"
                         data-groups                 =   '["all", "meat-proteins"]'
                         data-toggle                 =   "modal"
                         data-target                 =   "#view-item-modal">
@@ -323,9 +327,9 @@
                             <br/>
                             <div class="btn-group" style="width: 200px">
                                 <select name="storage-env" id="select-storage-env">
-                                    <option value="refrigerator">Refrigerator</option>
-                                    <option value="freezer">Freezer</option>
-                                    <option value="pantry">Pantry</option>
+                                <?php while($row = mysql_fetch_assoc($envs_result)) { ?>
+                                    <option value="<?php echo $row['env_id']; ?>"><?php echo $row['env_name'] ?></option>
+                                <?php } ?>
                                 </select>
                             </div>
                         </div>
