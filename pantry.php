@@ -6,7 +6,7 @@
     // SQL query to retrieve all items in the database associated wih the current user
     $query = "SELECT I.item_name, I.expiration_date, I.quantity, I.categories, I.storage_env
                 FROM items I
-                WHERE I.user_id = $userid;
+                WHERE I.user_id = " . $userid . "
                 ORDER BY I.expiration_date DESC";
     $result = mysql_query($query) or die(mysql_error());
 ?>
