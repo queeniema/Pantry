@@ -9,7 +9,7 @@ if (isset($_POST['login-username']) and isset($_POST['login-password'])) {
         $result = mysql_query($query) or die(mysql_error());
         $count = mysql_num_rows($result);
         if ($count == 1) {
-            $_SESSION['login-username'] = $username;
+            $_SESSION['user-id'] = $username;
             header ("Location: pantry.php");
         } else {
             $msg = "Invalid login credentials!";
