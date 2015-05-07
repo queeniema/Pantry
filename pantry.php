@@ -1,10 +1,10 @@
 <?php
     session_start();
-    require('lib/connect.php');
+    require('lib/MySQLConnection.php');
 
     $userid = $_SESSION['user-id'];
     // SQL query to retrieve all items in the database associated wih the current user
-    $query = "SELECT I.item_name, I.expiration_date, I.quantity, I.categories, I.storage_env 
+    $query = "SELECT I.item_name, I.expiration_date, I.quantity, I.categories, I.storage_env
                 FROM items I
                 WHERE I.user_id = $userid;
                 ORDER BY I.expiration_date DESC";
@@ -135,7 +135,7 @@
                 document.getElementById("item-storage-env").innerHTML       = $itemStorageEnv;
             });
         });
-            
+
     </script>
 
     <div id="wrapper">
@@ -224,13 +224,13 @@
             <div id="in-pantry-grid" class="row">
                 <!-- Populate grid dynamically based on items in the database -->
                 <?php while($row = mysql_fetch_assoc($result)) { ?>
-                    <div class="item pear" 
+                    <div class="item pear"
                         data-item-id                =   "<?php echo $row['item_id']; ?>"
-                        data-item-name              =   "<?php echo $row['item_name']; ?>" 
-                        data-item-expiration-date   =   "<?php echo $row['expiration_date']; ?>" 
-                        data-item-quantity          =   "<?php echo $row['quantity']; ?>" 
-                        data-item-categories        =   "<?php echo $row['categories']; ?>" 
-                        data-item-storage-env       =   "<?php echo $row['storage_env']; ?>" 
+                        data-item-name              =   "<?php echo $row['item_name']; ?>"
+                        data-item-expiration-date   =   "<?php echo $row['expiration_date']; ?>"
+                        data-item-quantity          =   "<?php echo $row['quantity']; ?>"
+                        data-item-categories        =   "<?php echo $row['categories']; ?>"
+                        data-item-storage-env       =   "<?php echo $row['storage_env']; ?>"
                         data-groups                 =   '["all", "meat-proteins"]'
                         data-toggle                 =   "modal"
                         data-target                 =   "#view-item-modal">
@@ -370,7 +370,7 @@
         $(document).ready(function () {
             $('#bs-datepicker').datepicker({
                 format: "mm/dd/yyyy"
-            });  
+            });
         });
     </script>
     <!-- For Boostrap multi-select -->
@@ -381,7 +381,7 @@
             $('#select-storage-env').multiselect();
         });
     </script>
-    
+
 </body>
 
 </html>

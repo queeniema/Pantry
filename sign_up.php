@@ -1,5 +1,5 @@
 <?php
-    require('lib/connect.php');
+    require('lib/MySQLConnection.php');
 
 if (isset($_POST['login-username']) and isset($_POST['login-password'])) {
         $username = $_POST['login-username'];
@@ -76,7 +76,7 @@ if (isset($_POST['login-username']) and isset($_POST['login-password'])) {
                 },
                 success: function (element) {
                     $(element).removeClass('error');
-                }, 
+                },
                 errorPlacement: function(error, element) {},
                 validClass: function(error, element) {}
             });

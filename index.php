@@ -1,6 +1,6 @@
 <?php
     session_start();
-    require('lib/connect.php');
+    require('lib/MySQLConnection.php');
     if (isset($_POST['login-username']) and isset($_POST['login-password'])) {
         $username = $_POST['login-username'];
         $password = $_POST['login-password'];
@@ -45,7 +45,7 @@
 </head>
 
 <body>
-    
+
     <script type="text/javascript">
         $(document).ready(function () {
             $('#login-nav').validate({
@@ -64,7 +64,7 @@
                 },
                 success: function (element) {
                     $(element).removeClass('error');
-                }, 
+                },
                 errorPlacement: function(error, element) {},
                 validClass: function(error, element) {}
             });

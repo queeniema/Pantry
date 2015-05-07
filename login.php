@@ -1,6 +1,6 @@
 <?php
   session_start();
-  require('lib/connect.php');
+  require('lib/MySQLConnection.php');
   if (isset($_POST['username']) and isset($_POST['password'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];

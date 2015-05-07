@@ -1,6 +1,6 @@
 <?php
     session_start();
-    require('lib/connect.php');
+    require('lib/MySQLConnection.php');
 
     if (isset($_POST['item-name'])) {
         $userid = $_SESSION['user-id'];
@@ -13,11 +13,11 @@
             array_push($foodcategories, $v);
         }
         $foodcategories = implode(",", $foodcategories);
-        
-        $query = "INSERT INTO `items`(`user_id`, `item_name`, `expiration_date`, `quantity`, `categories`, `storage_env`) 
+
+        $query = "INSERT INTO `items`(`user_id`, `item_name`, `expiration_date`, `quantity`, `categories`, `storage_env`)
                     VALUES ('$userid', '$name', '$expirationdate', '$quantity', '$foodcategories', '$storageenv')";
         $result = mysql_query($query) or die(mysql_error());
-        
+
         echo $name;
     }
 ?>
