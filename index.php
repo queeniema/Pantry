@@ -1,4 +1,5 @@
 <?php
+    error_reporting(E_ALL | ~E_DEPRECATED | ~E_STRICT);
     session_start();
     require('lib/MySQLConnection.php');
     if (isset($_POST['login-username']) and isset($_POST['login-password'])) {

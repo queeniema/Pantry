@@ -15,6 +15,12 @@
     // SQL query to retrieve all storange environments in the database associated wih the current user
     $query = "SELECT * FROM environments WHERE user_id = ". $userid;
     $envs_result = mysql_query($query) or die(mysql_error());
+
+    $query = "SELECT I.item_name, I.expiration_date, I.expired, I.quantity, I.categories, I.storage_env
+                FROM items I
+                WHERE I.user_id = " . $userid . " AND I.expired = TRUE
+                ORDER BY I.expiration_date DESC";
+    $expired_result = mysql_query($query) or die(mysql_error());
 ?>
 
 <!DOCTYPE html>
@@ -163,7 +169,7 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-left">
                     <li><a href="pantry.php">Pantry</a></li>
-                    <li><a href="#">Shopping List</a></li>
+                    <li><a href="shoppinglist.php">Shopping List</a></li>
                     <li><a href="environment.php">Storage Environments</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
@@ -191,22 +197,21 @@
 
         <div id="grid-wrapper">
             <div id="recently-expired-grid">
-                <div class="item pear"              data-groups='["all", "fruits"]'>            <span class="description">Pear</span></div>
-                <div class="item raw-salmon"        data-groups='["all", "meat-proteins"]'>     <span class="description">Raw Salmon</span></div>
-                <div class="item milk"              data-groups='["all", "dairy", "liquids"]'>  <span class="description">Milk</span></div>
-                <div class="item carrots"           data-groups='["all", "vegetables"]'>        <span class="description">Carrots</span></div>
-                <div class="item apple-pie"         data-groups='["all", "sweets"]'>            <span class="description">Apple Pie</span></div>
-                <div class="item pineapple"         data-groups='["all", "fruits"]'>            <span class="description">Pineapple</span></div>
-                <div class="item bread"             data-groups='["all", "grains-beans"]'>      <span class="description">Bread</span></div>
-                <div class="item frozen-chicken"    data-groups='["all", "meat-proteins"]'>     <span class="description">Frozen Chicken</span></div>
-                <div class="item eggplant"          data-groups='["all", "vegetables"]'>        <span class="description">Eggplant</span></div>
-                <div class="item kiwi"              data-groups='["all", "fruits"]'>            <span class="description">Kiwi</span></div>
-                <div class="item cooked-beefsteak"  data-groups='["all", "meat-proteins"]'>     <span class="description">Cooked Beef Steak</span></div>
-                <div class="item greek-yogurt"      data-groups='["all", "dairy"]'>             <span class="description">Greek Yogurt</span></div>
-                <div class="item banana"            data-groups='["all", "fruits"]'>            <span class="description">Banana</span></div>
-                <div class="item orange-juice"      data-groups='["all", "liquids"]'>           <span class="description">Orange Juice</span></div>
-                <div class="item spinach"           data-groups='["all", "vegetables"]'>        <span class="description">Spinach</span></div>
-                <div class="item snickers"          data-groups='["all", "sweets"]'>            <span class="description">Snickers</span></div>
+                <?php while($row = mysql_fetch_assoc($expiredresult)) : ?> 
+                    <?php if ((time() - strtotime($row['expiration_date'])) < (3600 * 24 * 7)): ?>
+                        <?php
+                            $categories = explode(',', $row['categories']);
+                            $datagroups = array();
+                            foreach ($categories as $category) {
+                                $datagroups[] = "\"" . $category . "\"";
+                            }
+                            $datagroups = implode(',', $datagroups);
+                        ?>
+                        <div class="item <?php echo $row['item_name']; ?>" data-groups='[<?php echo $datagroups; ?>]'>
+                            <span class="description"><?php echo $row['item_name']; ?></span>
+                         </div>
+                    <?php endif; ?>
+                <?php endwhile; ?>
             </div>
         </div>
     </div>
@@ -242,7 +247,8 @@
                         data-target                 =   "#view-item-modal">
                         <span class="description"><?php echo $row['item_name']; ?></span>
                     </div>
-                <?php } ?>
+                    <?php endif; ?>
+                <?php endwhile; ?>
                 <div class="item" id="add-item" data-groups='["all"]' data-toggle="modal" data-target="#add-item-modal"></div>
             </div>
         </div>

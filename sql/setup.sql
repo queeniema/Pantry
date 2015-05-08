@@ -24,10 +24,19 @@ CREATE TABLE IF NOT EXISTS `items` (
     `user_id` int(11) NOT NULL,
     `item_name` varchar(255) NOT NULL,
     `expiration_date` date NULL,
+    `expired` boolean NOT NULL,
     `quantity` int(11) NOT NULL,
     `categories` varchar(255) NOT NULL,
     `env_id` int(11) NOT NULL,
     PRIMARY KEY (`item_id`),
     FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
     FOREIGN KEY (`env_id`) REFERENCES `environments`(`env_id`) ON DELETE CASCADE
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS `sl_items` (
+    `user_id` int(11) NOT NULL,
+    `item_name` varchar(255) NOT NULL,
+    `quantity` int(11) NOT NULL,
+    PRIMARY KEY (`user_id`, `item_name`),
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
