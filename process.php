@@ -14,10 +14,33 @@
         }
         $foodcategories = implode(",", $foodcategories);
 
-        $query = "INSERT INTO `items`(`user_id`, `item_name`, `expiration_date`, `quantity`, `categories`, `storage_env`)
+        $query = "INSERT INTO `items`(`user_id`, `item_name`, `expiration_date`, `quantity`, `categories`, `env_id`)
                     VALUES ('$userid', '$name', '$expirationdate', '$quantity', '$foodcategories', '$storageenv')";
         $result = mysql_query($query) or die(mysql_error());
 
         echo $name;
+    }
+
+    if (isset($_POST['storage-name'])) {
+        $userid = $_SESSION['user-id'];
+        $name = $_POST['storage-name'];
+        $temp = $_POST['storage-temp'];
+
+        $query = "INSERT INTO `environments`(`user_id`, `env_name`, `temperature`)
+                    VALUES ('$userid', '$name', '$temp')";
+        $result = mysql_query($query) or die(mysql_error());
+
+        echo $name;
+    }
+
+    if (isset($_POST['remove-storage-id'])) {
+        $userid = $_SESSION['user-id'];
+        $envid = $_POST['remove-storage-id'];
+
+        $query = "DELETE FROM `environments`
+                     WHERE user_id = ".$userid." AND env_id = ".$envid;
+        $result = mysql_query($query) or die(mysql_error());
+
+        echo $envid;
     }
 ?>

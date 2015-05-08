@@ -5,13 +5,12 @@
         $username = $_POST['login-username'];
         $password = $_POST['login-password'];
         $query = "SELECT * FROM `users` WHERE username='$username' and password='$password'";
-
         $result = mysql_query($query) or die(mysql_error());
         $count = mysql_num_rows($result);
         if ($count == 1) {
-            $_SESSION['login-username'] = $username;
-            $row = mysql_fetch_array($result);
-            $_SESSION['user-id'] = $row['id'];
+            $_SESSION['user-id'] =  mysql_fetch_assoc($result)['id'];
+
+            // redirect
             header ("Location: pantry.php");
         } else {
             $msg = "Invalid login credentials!";

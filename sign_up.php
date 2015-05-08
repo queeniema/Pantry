@@ -1,15 +1,16 @@
 <?php
+    session_start();
     require('lib/MySQLConnection.php');
-
-if (isset($_POST['login-username']) and isset($_POST['login-password'])) {
+    if (isset($_POST['login-username']) and isset($_POST['login-password'])) {
         $username = $_POST['login-username'];
         $password = $_POST['login-password'];
         $query = "SELECT * FROM `users` WHERE username='$username' and password='$password'";
-
         $result = mysql_query($query) or die(mysql_error());
         $count = mysql_num_rows($result);
         if ($count == 1) {
-            $_SESSION['user-id'] = $username;
+            $_SESSION['user-id'] =  mysql_fetch_assoc($result)['id'];
+
+            // redirect
             header ("Location: pantry.php");
         } else {
             $msg = "Invalid login credentials!";
@@ -25,7 +26,7 @@ if (isset($_POST['login-username']) and isset($_POST['login-password'])) {
         $result = mysql_query($query);
         if($result) {
             $msg = "Your account was created successfully! Redirecting you to the home page...";
-            echo "<script>setTimeout(\"location.href = 'index.php';\",8000);</script>";
+            echo "<script>setTimeout(\"location.href = 'index.php';\",4000);</script>";
         }
     }
 ?>
