@@ -3,6 +3,8 @@
     require('lib/MySQLConnection.php');
 
     $userid = $_SESSION['user-id'];
+    if(!isset($userid))
+        header("Location: index.php");
     // SQL query to retrieve all items in the database associated wih the current user
     $query = "SELECT I.item_name, I.expiration_date, I.quantity, I.categories, E.env_name
                 FROM items I, environments E
@@ -162,7 +164,7 @@
                 <ul class="nav navbar-nav navbar-left">
                     <li><a href="pantry.php">Pantry</a></li>
                     <li><a href="#">Shopping List</a></li>
-                    <li><a href="#">Storage Environments</a></li>
+                    <li><a href="environment.php">Storage Environments</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li><a href="pantry-logout.php">Log Out</a></li>
