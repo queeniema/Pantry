@@ -32,4 +32,15 @@
 
         echo $name;
     }
+
+    if (isset($_POST['remove-storage-id'])) {
+        $userid = $_SESSION['user-id'];
+        $envid = $_POST['remove-storage-id'];
+
+        $query = "DELETE FROM `environments`
+                     WHERE user_id = ".$userid." AND env_id = ".$envid;
+        $result = mysql_query($query) or die(mysql_error());
+
+        echo $envid;
+    }
 ?>

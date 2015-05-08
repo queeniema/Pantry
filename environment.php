@@ -53,7 +53,7 @@
                 $.ajax({
                     type: "POST",
                     url: "process.php",
-                    data: $('form.modal').serialize(),
+                    data: $('form.add').serialize(),
                     success: function(response){
                         // delete the add item circle
                         var $addItem = $('#add-item');
@@ -72,6 +72,24 @@
                 });
             });
 
+            /* handle removing an env */
+            $("button#btn-remove").click(function(){
+                $.ajax({
+                    type: "POST",
+                    url: "process.php",
+                    data: $('form.remove').serialize(),
+                    success: function(response){
+                        // delete the storage item
+                        var id = $('form.remove input')[0].value;
+                        var $storage = $('#storage-'+id);
+                        $('#storage-env-grid').shuffle('remove', $storage);
+                    },
+                    error: function(){
+                        alert("failure");
+                    }
+                });
+            });
+
             /* reset the modal to step 1 and remove form data */
             $('body').on('hidden.bs.modal', '.modal', function () {
                 $(this).removeData('bs.modal');
@@ -82,11 +100,14 @@
             /* populate item data when clicked */
             $('#view-storage-modal').on('show.bs.modal', function(e) {
                 // get data-item-XXX attributes of the clicked element
+                var $storageID           = $(e.relatedTarget).data('storage-id');
                 var $storageName           = $(e.relatedTarget).data('storage-name');
                 var $storageTemp     = $(e.relatedTarget).data('storage-temp');
                 // fill in the item's info
-                document.getElementById("storage-name").innerHTML              = $storageName;
+                document.getElementById("storage-name").innerHTML       = $storageName;
                 document.getElementById("storage-temp").innerHTML       = $storageTemp;
+                document.getElementById("remove-storage-id").value      = $storageID;
+
             });
         });
 
@@ -131,7 +152,7 @@
             <div id="storage-env-grid" class="row">
                 <!-- Populate grid dynamically based on items in the database -->
                 <?php  while($row = mysql_fetch_assoc($envs_result)) { ?>
-                    <div class="item storage"
+                    <div class="item storage" id="storage-<?php echo $row['env_id']; ?>"
                         data-storage-id                =   "<?php echo $row['env_id']; ?>"
                         data-storage-name              =   "<?php echo $row['env_name']; ?>"
                         data-storage-temp              =   "<?php echo $row['temperature']; ?>"
@@ -156,9 +177,13 @@
                 <div class="modal-body">
                     <div id="view-storage-container">
                         <p>Temperature (F): <span id="storage-temp"></span></p>
+                    <form class="modal remove">
+                        <input class="form-control" type="hidden" name="remove-storage-id" id="remove-storage-id"/>
+                    </form>
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button class="btn btn-modal-footer" type="submit" name="submit" id="btn-remove" data-dismiss="modal">Remove</button>
                     <button type="button" class="btn btn-modal-footer" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -166,7 +191,7 @@
     </div>
 
     <!-- Add item modal -->
-    <form class="modal multi-step" id="add-item-modal">
+    <form class="modal multi-step add" id="add-item-modal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
