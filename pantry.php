@@ -6,7 +6,7 @@
     if(!isset($userid))
         header("Location: index.php");
     // SQL query to retrieve all items in the database associated wih the current user
-    $query = "SELECT I.item_name, I.expiration_date, I.quantity, I.categories, E.env_name
+    $query = "SELECT I.item_name, I.expiration_date, I.expired, I.quantity, I.categories, E.env_name
                 FROM items I, environments E
                 WHERE I.user_id = " . $userid . " AND I.env_id = E.env_id
                 ORDER BY I.expiration_date DESC";
@@ -16,7 +16,7 @@
     $query = "SELECT * FROM environments WHERE user_id = ". $userid;
     $envs_result = mysql_query($query) or die(mysql_error());
 
-    $query = "SELECT I.item_name, I.expiration_date, I.expired, I.quantity, I.categories, I.storage_env
+    $query = "SELECT I.item_name, I.expiration_date, I.expired, I.quantity, I.categories
                 FROM items I
                 WHERE I.user_id = " . $userid . " AND I.expired = TRUE
                 ORDER BY I.expiration_date DESC";
@@ -197,7 +197,7 @@
 
         <div id="grid-wrapper">
             <div id="recently-expired-grid">
-                <?php while($row = mysql_fetch_assoc($expiredresult)) : ?> 
+                <?php while($row = mysql_fetch_assoc($expired_result)) : ?> 
                     <?php if ((time() - strtotime($row['expiration_date'])) < (3600 * 24 * 7)): ?>
                         <?php
                             $categories = explode(',', $row['categories']);
@@ -234,8 +234,9 @@
         <div id="grid-wrapper">
             <div id="in-pantry-grid" class="row">
                 <!-- Populate grid dynamically based on items in the database -->
-                <?php while($row = mysql_fetch_assoc($items_result)) { ?>
-                    <div class="item pear"
+                <?php while($row = mysql_fetch_assoc($items_result)) : ?>
+                    <?php if (!$row['expired']) : ?>
+                    <div class="item <?php echo $row['item_name']; ?>"
                         data-item-id                =   "<?php echo $row['item_id']; ?>"
                         data-item-name              =   "<?php echo $row['item_name']; ?>"
                         data-item-expiration-date   =   "<?php echo $row['expiration_date']; ?>"
