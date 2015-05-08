@@ -14,9 +14,6 @@ Use 'password' when prompted for root mysql password
 ### Setup MySQL Database
     mysql --user=root --password=password
     CREATE DATABASE pantry;
-    USE pantry;
-    SOURCE sql/setup.sql;
-
 
 ### Enable Error Reporting
     sudo vim /etc/php5/apache2/php.ini
@@ -25,3 +22,7 @@ Use 'password' when prompted for root mysql password
     sudo service apache2 restart
 
 ## Setup Scripts
+    mysql pantry --user=root --password=password
+    SOURCE sql/reset.sql;
+    SOURCE sql/setup.sql;
+* SQL scripts only at the moment
