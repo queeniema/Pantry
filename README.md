@@ -26,3 +26,19 @@ Use 'password' when prompted for root mysql password
     SOURCE sql/reset.sql;
     SOURCE sql/setup.sql;
 * SQL scripts only at the moment
+
+## Testing
+Install Composer and required libraries
+```
+curl -sS https://getcomposer.org/installer | php
+php composer.phar install
+```
+Run Selenium Server
+```
+java -jar selenium-server-standalone-2.45.0.jar
+```
+In a new CLI, run the tests. We assume that your Apache port is 8888. 
+You can change this to match your environment. Note: you must have Firefox installed. 
+```
+vendor/bin/phpunit tests/basic_test.php
+```

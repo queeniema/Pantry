@@ -18,7 +18,18 @@
                     VALUES ('$userid', '$name', '$expirationdate', '$quantity', '$foodcategories', '$storageenv')";
         $result = mysql_query($query) or die(mysql_error());
 
-        echo $name;
+        echo json_encode(array("name"=>$name, "id"=>mysql_insert_id()));
+    }
+
+    if (isset($_POST['remove-item-id'])) {
+        $userid = $_SESSION['user-id'];
+        $itemid = $_POST['remove-item-id'];
+
+        $query = "DELETE FROM `items`
+                     WHERE user_id = ".$userid." AND item_id = ".$itemid;
+        $result = mysql_query($query) or die(mysql_error());
+
+        echo $itemid;
     }
 
     if (isset($_POST['storage-name'])) {

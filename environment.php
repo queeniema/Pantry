@@ -56,12 +56,12 @@
                     data: $('form.add').serialize(),
                     success: function(response){
                         // delete the add item circle
-                        var $addItem = $('#add-item');
+                        var $addItem = $('#add-storage');
                         $('#storage-env-grid').shuffle('remove', $addItem);
 
                         // append a new item and the add item circle to the grid
                         var $newItem = $("<div class=\"item green circle remove\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#view-item-modal\">" + response + "</div>");
-                        var $addItem = $("<div class=\"item circle remove\" id=\"add-item\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#add-item-modal\"></div>");
+                        var $addItem = $("<div class=\"item circle remove\" id=\"add-storage\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#add-storage-modal\"></div>");
                         $items = $newItem.add($addItem);
                         $('#storage-env-grid').append($items);
                         $('#storage-env-grid').shuffle('appended', $items);
@@ -93,20 +93,20 @@
             /* reset the modal to step 1 and remove form data */
             $('body').on('hidden.bs.modal', '.modal', function () {
                 $(this).removeData('bs.modal');
-                sendEvent('#add-item-modal', 1);
+                sendEvent('#add-storage-modal', 1);
                 $("form").trigger("reset");
             });
 
             /* populate item data when clicked */
             $('#view-storage-modal').on('show.bs.modal', function(e) {
                 // get data-item-XXX attributes of the clicked element
-                var $storageID           = $(e.relatedTarget).data('storage-id');
-                var $storageName           = $(e.relatedTarget).data('storage-name');
-                var $storageTemp     = $(e.relatedTarget).data('storage-temp');
+                var $storageID = $(e.relatedTarget).data('storage-id');
+                var $storageName = $(e.relatedTarget).data('storage-name');
+                var $storageTemp = $(e.relatedTarget).data('storage-temp');
                 // fill in the item's info
-                document.getElementById("storage-name").innerHTML       = $storageName;
-                document.getElementById("storage-temp").innerHTML       = $storageTemp;
-                document.getElementById("remove-storage-id").value      = $storageID;
+                document.getElementById("storage-name-view").innerHTML = $storageName;
+                document.getElementById("storage-temp-view").innerHTML = $storageTemp;
+                document.getElementById("remove-storage-id").value = $storageID;
 
             });
         });
@@ -145,7 +145,7 @@
     <!-- Pantry -->
 
 
-    <h1 id="storage-env-header">Storage Environemnts</h1>
+    <h1 id="storage-env-header">Storage Environments</h1>
     <div id="storage-env-container" class="container-fluid">
 
         <div id="grid-wrapper">
@@ -153,16 +153,16 @@
                 <!-- Populate grid dynamically based on items in the database -->
                 <?php  while($row = mysql_fetch_assoc($envs_result)) { ?>
                     <div class="item storage" id="storage-<?php echo $row['env_id']; ?>"
-                        data-storage-id                =   "<?php echo $row['env_id']; ?>"
-                        data-storage-name              =   "<?php echo $row['env_name']; ?>"
-                        data-storage-temp              =   "<?php echo $row['temperature']; ?>"
-                        data-groups                 =   '["all",]'
-                        data-toggle                 =   "modal"
-                        data-target                 =   "#view-storage-modal">
+                        data-storage-id     =   "<?php echo $row['env_id']; ?>"
+                        data-storage-name   =   "<?php echo $row['env_name']; ?>"
+                        data-storage-temp   =   "<?php echo $row['temperature']; ?>"
+                        data-groups         =   '["all",]'
+                        data-toggle         =   "modal"
+                        data-target         =   "#view-storage-modal">
                         <span class="description"><?php echo $row['env_name']; ?></span>
                     </div>
                 <?php } ?>
-                <div class="item" id="add-item" data-groups='["all"]' data-toggle="modal" data-target="#add-item-modal"></div>
+                <div class="item" id="add-storage" data-groups='["all"]' data-toggle="modal" data-target="#add-storage-modal"></div>
             </div>
         </div>
     </div>
@@ -172,11 +172,11 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="item-name"></h4>
+                    <h4 class="modal-title" id="storage-name-view"></h4>
                 </div>
                 <div class="modal-body">
                     <div id="view-storage-container">
-                        <p>Temperature (F): <span id="storage-temp"></span></p>
+                        <p>Temperature (F): <span id="storage-temp-view"></span></p>
                     <form class="modal remove">
                         <input class="form-control" type="hidden" name="remove-storage-id" id="remove-storage-id"/>
                     </form>
@@ -191,7 +191,7 @@
     </div>
 
     <!-- Add item modal -->
-    <form class="modal multi-step add" id="add-item-modal">
+    <form class="modal multi-step add" id="add-storage-modal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS `environments`;
 DROP TABLE IF EXISTS `sl_items`;
 DROP TABLE IF EXISTS `items`;
+DROP TABLE IF EXISTS `environments`;
 DROP TABLE IF EXISTS `users`;

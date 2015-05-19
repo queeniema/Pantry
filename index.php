@@ -12,7 +12,8 @@
             $_SESSION['user-id'] =  mysql_fetch_assoc($result)['id'];
 
             // redirect
-            header ("Location: pantry.php");
+            // header ("Location:pantry.php");
+            echo "<script type='text/javascript'>window.top.location='pantry.php';</script>";
         } else {
             $msg = "Invalid login credentials!";
         }
@@ -95,7 +96,7 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Log In <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" id="login-dropdown" data-toggle="dropdown">Log In <b class="caret"></b></a>
                         <ul class="dropdown-menu" style="padding: 15px;min-width: 250px;">
                             <li>
                                 <div class="row">

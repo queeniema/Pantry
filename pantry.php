@@ -6,7 +6,7 @@
     if(!isset($userid))
         header("Location: index.php");
     // SQL query to retrieve all items in the database associated wih the current user
-    $query = "SELECT I.item_name, I.expiration_date, I.expired, I.quantity, I.categories, E.env_name
+    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, I.categories, E.env_name
                 FROM items I, environments E
                 WHERE I.user_id = " . $userid . " AND I.env_id = E.env_id
                 ORDER BY I.expiration_date DESC";
@@ -16,7 +16,7 @@
     $query = "SELECT * FROM environments WHERE user_id = ". $userid;
     $envs_result = mysql_query($query) or die(mysql_error());
 
-    $query = "SELECT I.item_name, I.expiration_date, I.expired, I.quantity, I.categories
+    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, I.categories
                 FROM items I
                 WHERE I.user_id = " . $userid . " AND I.expired = TRUE
                 ORDER BY I.expiration_date DESC";
@@ -105,18 +105,37 @@
                 $.ajax({
                     type: "POST",
                     url: "process.php",
-                    data: $('form.modal').serialize(),
+                    data: $('form.add').serialize(),
                     success: function(response){
+                        var data = JSON.parse(response);
                         // delete the add item circle
                         var $addItem = $('#add-item');
                         $('#in-pantry-grid').shuffle('remove', $addItem);
 
                         // append a new item and the add item circle to the grid
-                        var $newItem = $("<div class=\"item green circle remove\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#view-item-modal\">" + response + "</div>");
+                        var $newItem = $("<div class=\"item green circle remove\" data-item-id=\"" + data.id + "\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#view-item-modal\">" + "<span class=\"description\">" + data.name + "</span></div>");
                         var $addItem = $("<div class=\"item circle remove\" id=\"add-item\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#add-item-modal\"></div>");
                         $items = $newItem.add($addItem);
                         $('#in-pantry-grid').append($items);
                         $('#in-pantry-grid').shuffle('appended', $items);
+                    },
+                    error: function(){
+                        alert("failure");
+                    }
+                });
+            });
+
+            /* handle removing an item */
+            $("button#btn-remove").click(function(){
+                $.ajax({
+                    type: "POST",
+                    url: "process.php",
+                    data: $('form.remove').serialize(),
+                    success: function(response){
+                        // delete the item
+                        var id = $('form.remove input')[0].value;
+                        var $item = $('#item-'+id);
+                        $('#in-pantry-grid').shuffle('remove', $item);
                     },
                     error: function(){
                         alert("failure");
@@ -134,17 +153,19 @@
             /* populate item data when clicked */
             $('#view-item-modal').on('show.bs.modal', function(e) {
                 // get data-item-XXX attributes of the clicked element
+                var $itemID             = $(e.relatedTarget).data('item-id');
                 var $itemName           = $(e.relatedTarget).data('item-name');
                 var $itemExpirationDate = $(e.relatedTarget).data('item-expiration-date');
                 var $itemQuantity       = $(e.relatedTarget).data('item-quantity');
                 var $itemCategories     = $(e.relatedTarget).data('item-categories');
                 var $itemStorageEnv     = $(e.relatedTarget).data('item-storage-env');
                 // fill in the item's info
-                document.getElementById("item-name").innerHTML              = $itemName;
-                document.getElementById("item-expiration-date").innerHTML   = $itemExpirationDate;
-                document.getElementById("item-quantity").innerHTML          = $itemQuantity;
-                document.getElementById("item-categories").innerHTML        = $itemCategories;
-                document.getElementById("item-storage-env").innerHTML       = $itemStorageEnv;
+                document.getElementById("item-name-view").innerHTML              = $itemName;
+                document.getElementById("item-expiration-date-view").innerHTML   = $itemExpirationDate;
+                document.getElementById("item-quantity-view").innerHTML          = $itemQuantity;
+                document.getElementById("item-categories-view").innerHTML        = $itemCategories;
+                document.getElementById("item-storage-env-view").innerHTML       = $itemStorageEnv;
+                document.getElementById("remove-item-id").value                  = $itemID;
             });
         });
 
@@ -207,9 +228,10 @@
                             }
                             $datagroups = implode(',', $datagroups);
                         ?>
-                        <div class="item <?php echo $row['item_name']; ?>" data-groups='[<?php echo $datagroups; ?>]'>
+                        <div class="item <?php echo $row['item_name']; ?>" id="item-<?php echo $row['item_id']; ?>"
+                            data-groups='[<?php echo $datagroups; ?>]'>
                             <span class="description"><?php echo $row['item_name']; ?></span>
-                         </div>
+                        </div>
                     <?php endif; ?>
                 <?php endwhile; ?>
             </div>
@@ -236,7 +258,7 @@
                 <!-- Populate grid dynamically based on items in the database -->
                 <?php while($row = mysql_fetch_assoc($items_result)) : ?>
                     <?php if (!$row['expired']) : ?>
-                    <div class="item <?php echo $row['item_name']; ?>"
+                    <div class="item <?php echo $row['item_name']; ?>" id="item-<?php echo $row['item_id']; ?>"
                         data-item-id                =   "<?php echo $row['item_id']; ?>"
                         data-item-name              =   "<?php echo $row['item_name']; ?>"
                         data-item-expiration-date   =   "<?php echo $row['expiration_date']; ?>"
@@ -260,17 +282,21 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="item-name"></h4>
+                    <h4 class="modal-title" id="item-name-view"></h4>
                 </div>
                 <div class="modal-body">
                     <div id="view-item-container">
-                        <p>Expiration Date: <span id="item-expiration-date"></span></p><br/>
-                        <p>Quantity: <span id="item-quantity"></span></p><br/>
-                        <p>Categories: <span id="item-categories"></span></p><br/>
-                        <p>Storage Environment: <span id="item-storage-env"></span></p>
+                        <p>Expiration Date: <span id="item-expiration-date-view"></span></p><br/>
+                        <p>Quantity: <span id="item-quantity-view"></span></p><br/>
+                        <p>Categories: <span id="item-categories-view"></span></p><br/>
+                        <p>Storage Environment: <span id="item-storage-env-view"></span></p>
+                        <form class="modal remove">
+                            <input class="form-control" type="hidden" name="remove-item-id" id="remove-item-id"/>
+                        </form>
                     </div>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-modal-footer" type="submit" name="submit" id="btn-remove" data-dismiss="modal">Remove</button>
                     <button type="button" class="btn btn-modal-footer" data-dismiss="modal">Close</button>
                 </div>
             </div>
@@ -278,7 +304,7 @@
     </div>
 
     <!-- Add item modal -->
-    <form class="modal multi-step" id="add-item-modal">
+    <form class="modal multi-step add" id="add-item-modal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
