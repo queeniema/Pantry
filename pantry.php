@@ -113,7 +113,7 @@
                         $('#in-pantry-grid').shuffle('remove', $addItem);
 
                         // append a new item and the add item circle to the grid
-                        var $newItem = $("<div class=\"item green circle remove\" data-item-id=\"" + data.id + "\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#view-item-modal\">" + "<span class=\"description\">" + data.name + "</span></div>");
+                        var $newItem = $("<div class=\"item green circle remove\" id=\"item-" + data.id + "\" data-item-id=\"" + data.id + "\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#view-item-modal\">" + "<span class=\"description\">" + data.name + "</span></div>");
                         var $addItem = $("<div class=\"item circle remove\" id=\"add-item\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#add-item-modal\"></div>");
                         $items = $newItem.add($addItem);
                         $('#in-pantry-grid').append($items);
