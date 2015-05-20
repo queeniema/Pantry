@@ -55,12 +55,19 @@
                     url: "process.php",
                     data: $('form.add').serialize(),
                     success: function(response){
+                        var data = JSON.parse(response);
                         // delete the add item circle
                         var $addItem = $('#add-item');
                         $('#storage-env-grid').shuffle('remove', $addItem);
 
                         // append a new item and the add item circle to the grid
-                        var $newItem = $("<div class=\"item green circle remove\" id=\"item-" + response + "\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#view-storage-modal\">" + response + "</div>");
+                        var $newItem = $("<div class=\"item green circle remove\" id=\"storage-" + data.id + 
+                            "\" data-storage-id=\"" + data.id + 
+                            "\" data-storage-name=\"" + data.name + 
+                            "\" data-storage-temp=\"" + data.temp + 
+                            "\" data-groups='[\"all\"]'" +
+                            "\" data-toggle=\"modal\"" +
+                            "\" data-target=\"#view-storage-modal\">" + data.name + "</div>");
                         var $addItem = $("<div class=\"item circle remove\" id=\"add-item\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#add-storage-modal\"></div>");
                         $items = $newItem.add($addItem);
                         $('#storage-env-grid').append($items);

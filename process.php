@@ -12,13 +12,26 @@
         foreach($_POST['food-categories'] as $k => $v) {
             array_push($foodcategories, $v);
         }
-        $foodcategories = implode(",", $foodcategories);
+        $foodcategories = implode(", ", $foodcategories);
 
         $query = "INSERT INTO `items`(`user_id`, `item_name`, `expiration_date`, `quantity`, `categories`, `env_id`)
                     VALUES ('$userid', '$name', '$expirationdate', '$quantity', '$foodcategories', '$storageenv')";
         $result = mysql_query($query) or die(mysql_error());
 
-        echo json_encode(array("name"=>$name, "id"=>mysql_insert_id()));
+        $itemid = mysql_insert_id();
+
+        $query2 = "SELECT `env_name` FROM `environments` WHERE `env_id`=$storageenv";
+        $result2 = mysql_query($query2) or die(mysql_error());
+        $row = mysql_fetch_assoc($result2);
+
+        echo json_encode(array(
+            "id"                => $itemid,
+            "name"              => $name, 
+            "expDate"           => $expirationdate,
+            "quantity"          => $quantity,
+            "foodCategories"    => $foodcategories,
+            "storageEnv"        => $row['env_name']
+        ));
     }
 
     if (isset($_POST['remove-item-id'])) {
@@ -41,7 +54,13 @@
                     VALUES ('$userid', '$name', '$temp')";
         $result = mysql_query($query) or die(mysql_error());
 
-        echo $name;
+        $storageid = mysql_insert_id();
+
+        echo json_encode(array(
+            "id"    => $storageid,
+            "name"  => $name, 
+            "temp"  => $temp,
+        ));
     }
 
     if (isset($_POST['remove-storage-id'])) {
