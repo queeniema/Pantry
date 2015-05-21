@@ -10,17 +10,17 @@
                 FROM items I, environments E
                 WHERE I.user_id = " . $userid . " AND I.env_id = E.env_id
                 ORDER BY I.expiration_date DESC";
-    $items_result = mysql_query($query) or die(mysql_error());
+    $items_result = $db->query($query) or die($db->error);
 
     // SQL query to retrieve all storange environments in the database associated wih the current user
     $query = "SELECT * FROM environments WHERE user_id = ". $userid;
-    $envs_result = mysql_query($query) or die(mysql_error());
+    $envs_result = $db->query($query) or die($db->error);
 
     $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, I.categories
                 FROM items I
                 WHERE I.user_id = " . $userid . " AND I.expired = TRUE
                 ORDER BY I.expiration_date DESC";
-    $expired_result = mysql_query($query) or die(mysql_error());
+    $expired_result = $db->query($query) or die($db->error);
 ?>
 
 <!DOCTYPE html>
@@ -112,16 +112,16 @@
                         var $addItem = $('#add-item');
                         $('#in-pantry-grid').shuffle('remove', $addItem);
 
-                        var $newItem = $("<div class=\"item green circle remove\" id=\"item-" + data.id + 
-                            "\" data-item-id=\"" + data.id + 
-                            "\" data-item-name=\"" + data.name + 
-                            "\" data-item-expiration-date=\"" + data.expDate + 
-                            "\" data-item-quantity=\"" + data.quantity + 
-                            "\" data-item-categories=\"" + data.foodCategories + 
-                            "\" data-item-storage-env=\"" + data.storageEnv + 
+                        var $newItem = $("<div class=\"item green circle remove\" id=\"item-" + data.id +
+                            "\" data-item-id=\"" + data.id +
+                            "\" data-item-name=\"" + data.name +
+                            "\" data-item-expiration-date=\"" + data.expDate +
+                            "\" data-item-quantity=\"" + data.quantity +
+                            "\" data-item-categories=\"" + data.foodCategories +
+                            "\" data-item-storage-env=\"" + data.storageEnv +
                             "\" data-groups='[\"all\"]'" +
-                            "\" data-toggle=\"modal\"" + 
-                            "\" data-target=\"#view-item-modal\">" + 
+                            "\" data-toggle=\"modal\"" +
+                            "\" data-target=\"#view-item-modal\">" +
                             "<span class=\"description\">" + data.name + "</span></div>");
                         var $addItem = $("<div class=\"item circle remove\" id=\"add-item\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#add-item-modal\"></div>");
                         $items = $newItem.add($addItem);
@@ -227,7 +227,7 @@
 
         <div id="grid-wrapper">
             <div id="recently-expired-grid">
-                <?php while($row = mysql_fetch_assoc($expired_result)) : ?> 
+                <?php while($row = $expired_result->fetch_assoc()) : ?>
                     <?php if ((time() - strtotime($row['expiration_date'])) < (3600 * 24 * 7)): ?>
                         <?php
                             $categories = explode(',', $row['categories']);
@@ -265,7 +265,7 @@
         <div id="grid-wrapper">
             <div id="in-pantry-grid" class="row">
                 <!-- Populate grid dynamically based on items in the database -->
-                <?php while($row = mysql_fetch_assoc($items_result)) : ?>
+                <?php while($row = $items_result->fetch_assoc()) : ?>
                     <?php if (!$row['expired']) : ?>
                     <div class="item <?php echo $row['item_name']; ?>" id="item-<?php echo $row['item_id']; ?>"
                         data-item-id                =   "<?php echo $row['item_id']; ?>"
@@ -371,7 +371,7 @@
                             <br/>
                             <div class="btn-group" style="width: 200px">
                                 <select name="storage-env" id="select-storage-env">
-                                <?php while($row = mysql_fetch_assoc($envs_result)) { ?>
+                                <?php while($row = $envs_result->fetch_assoc()) { ?>
                                     <option value="<?php echo $row['env_id']; ?>"><?php echo $row['env_name'] ?></option>
                                 <?php } ?>
                                 </select>

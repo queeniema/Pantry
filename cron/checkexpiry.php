@@ -6,8 +6,8 @@ require('../lib/ObserverSubject.php');
 $items = array();
 
 $query = "SELECT * FROM `items` WHERE expired=false";
-$result = mysql_query($query) or die(mysql_error());
-while ($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+$result =  $db->query($query) or die($db->error);
+while ($row = $result->fetch_assoc()) {
 	$items[] = new Item($row);
 }
 

@@ -5,7 +5,7 @@
     $userid = $_SESSION['user-id'];
     // SQL query to retrieve all items in the database associated wih the current user
     $query = "SELECT * FROM sl_items I WHERE I.user_id = " . $userid;
-    $result = mysql_query($query) or die(mysql_error());
+    $result = $db->query($query) or die($db->error);
 ?>
 
 <!DOCTYPE html>
@@ -76,7 +76,7 @@
     <div id="shopping-list-container" class="container-fluid">
         <ul class="list-group">
           <!-- Populate grid dynamically based on items in the database -->
-            <?php while($row = mysql_fetch_assoc($result)) { ?>
+            <?php while($row = $result->fetch_assoc()) { ?>
             <li class="list-group-item">
                 <ul class="media-list">
                     <li class="media">
@@ -97,7 +97,7 @@
 
         <div id="grid-wrapper">
             <div id="in-pantry-grid" class="row">
-                
+
                 <div class="item" id="add-item" data-groups='["all"]' data-toggle="modal" data-target="#add-item-modal"></div>
             </div>
         </div>
