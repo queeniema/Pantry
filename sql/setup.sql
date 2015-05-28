@@ -107,12 +107,11 @@ INSERT INTO `foods` (food_name, food_category, food_expire_room, food_expire_fri
 INSERT INTO `foods` (food_name, food_category, food_expire_room, food_expire_fridge, food_expire_freezer) VALUES ('Tomato', 3, 72, 96, 1300);
 INSERT INTO `foods` (food_name, food_category, food_expire_room, food_expire_fridge, food_expire_freezer) VALUES ('Spinach', 3, 24, 120, 7200);
 
-INSERT INTO `foods` (food_name, food_category, food_expire_room, food_expire_fridge, food_expire_freezer) VALUES ('Barely', 4, 8000, 8000, 8000);
+INSERT INTO `foods` (food_name, food_category, food_expire_room, food_expire_fridge, food_expire_freezer) VALUES ('Barley', 4, 8000, 8000, 8000);
 INSERT INTO `foods` (food_name, food_category, food_expire_room, food_expire_fridge, food_expire_freezer) VALUES ('Cornmeal', 4, 8000, 12000, 16000);
 INSERT INTO `foods` (food_name, food_category, food_expire_room, food_expire_fridge, food_expire_freezer) VALUES ('Rice Basmati', 4, 100000, 100000, 100000);
 INSERT INTO `foods` (food_name, food_category, food_expire_room, food_expire_fridge, food_expire_freezer) VALUES ('Rice Brown', 4, 4000, 8000, 12000);
 INSERT INTO `foods` (food_name, food_category, food_expire_room, food_expire_fridge, food_expire_freezer) VALUES ('Rice Jasmine', 4, 100000, 100000, 100000);
-INSERT INTO `foods` (food_name, food_category, food_expire_room, food_expire_fridge, food_expire_freezer) VALUES ('Rice Basmati', 4, 100000, 100000, 100000);
 INSERT INTO `foods` (food_name, food_category, food_expire_room, food_expire_fridge, food_expire_freezer) VALUES ('Pasta', 4, 26000, 26000, 26000);
 INSERT INTO `foods` (food_name, food_category, food_expire_room, food_expire_fridge, food_expire_freezer) VALUES ('Ziti', 4, 26000, 26000, 26000);
 
