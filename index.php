@@ -9,7 +9,8 @@
         $result = $db->query($query) or die($db->error);
         $count = $result->num_rows;
         if ($count == 1) {
-            $_SESSION['user-id'] = $result->fetch_assoc()['id'];
+            $result = $result->fetch_assoc();
+            $_SESSION['user-id'] = $result['id'];
 
             // redirect
             header ("Location:pantry.php");
