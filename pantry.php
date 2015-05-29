@@ -328,8 +328,6 @@
                             <button type="button" class="custom-button btn-entry-method" id="btn-enter-common" onclick="sendEvent('#add-item-modal', 2)">Enter Quickly</button>
                             <br\> <br\> <br\>
                             <button type="button" class="custom-button btn-entry-method" id="btn-enter-manually" onclick="sendEvent('#add-item-modal', 3)">Enter Manually</button>
-                            <br\> <br\> <br\>
-                            <button type="button" class="custom-button btn-entry-method" id="btn-can-barcode">Scan Barcode</button>
                         </div>
                     </div>
                 </div>
