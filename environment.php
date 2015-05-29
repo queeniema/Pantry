@@ -5,7 +5,7 @@
     $userid = $_SESSION['user-id'];
     // SQL query to retrieve all storange environments in the database associated wih the current user
     $query = "SELECT * FROM environments WHERE user_id = ". $userid;
-    $envs_result = mysql_query($query) or die(mysql_error());
+    $envs_result = $db->query($query) or die($db->error);
 ?>
 
 <!DOCTYPE html>
@@ -61,10 +61,10 @@
                         $('#storage-env-grid').shuffle('remove', $addItem);
 
                         // append a new item and the add item circle to the grid
-                        var $newItem = $("<div class=\"item green circle remove\" id=\"storage-" + data.id + 
-                            "\" data-storage-id=\"" + data.id + 
-                            "\" data-storage-name=\"" + data.name + 
-                            "\" data-storage-temp=\"" + data.temp + 
+                        var $newItem = $("<div class=\"item green circle remove\" id=\"storage-" + data.id +
+                            "\" data-storage-id=\"" + data.id +
+                            "\" data-storage-name=\"" + data.name +
+                            "\" data-storage-temp=\"" + data.temp +
                             "\" data-groups='[\"all\"]'" +
                             "\" data-toggle=\"modal\"" +
                             "\" data-target=\"#view-storage-modal\">" + data.name + "</div>");
@@ -158,7 +158,7 @@
         <div id="grid-wrapper">
             <div id="storage-env-grid" class="row">
                 <!-- Populate grid dynamically based on items in the database -->
-                <?php  while($row = mysql_fetch_assoc($envs_result)) { ?>
+                <?php  while($row = $envs_result->fetch_assoc()) { ?>
                     <div class="item storage" id="storage-<?php echo $row['env_id']; ?>"
                         data-storage-id     =   "<?php echo $row['env_id']; ?>"
                         data-storage-name   =   "<?php echo $row['env_name']; ?>"

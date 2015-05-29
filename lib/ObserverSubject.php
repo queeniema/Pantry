@@ -24,22 +24,22 @@ class ShoppingList extends AbstractObserver {
 
 			// See if item is already in the list
 			$query = "SELECT * FROM `sl_items` WHERE user_id='$user_id' AND item_name='$item_name'";
-			$result = mysql_query($query) or die(mysql_error());
-	        if (mysql_num_rows($result)) {
-	            $row = mysql_fetch_array($result);
+			$result = $db->query($query) or die($db->error);
+	        if ($result->num_rows) {
+	            $row = $result->fetch_assoc();
 	            // If so, increment the quantity to buy
 	            $query = "UPDATE `sl_items` SET quantity = quantity + $subject->quantity";
-				$result = mysql_query($query) or die(mysql_error());
+				$result = $db->query($query) or die($db->error);
 	        }
 	        // If none of that item is in the list, add it to the list
 	        else {
 	        	$query = "INSERT INTO `sl_items` VALUES ($subject->user_id, '$subject->item_name', $subject->quantity)";
-	        	$result = mysql_query($query) or die(mysql_error());
+	        	$result = $db->query($query) or die($db->error);
 	        }
 
 	        // Update the item status
 	        $query = "UPDATE `items` SET expired = TRUE WHERE item_id='$subject->item_id'";
-	        $result = mysql_query($query) or die(mysql_error());
+	        $result = $db->query($query) or die($db->error);
 		}
 	}
 }

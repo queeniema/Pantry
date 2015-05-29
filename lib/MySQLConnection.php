@@ -3,28 +3,26 @@
 class MySQLConnection {
 
   private static $connection = null;
+  private static $db = null;
 
   private static $username = 'root';
   private static $password = 'password';
   private static $database = 'pantry';
 
   private function __construct() {
-    $connection = mysql_connect('localhost', MySQLConnection::$username, MySQLConnection::$password);
-    if(!$connection)
-      die("Connection error" . mysql_error());
-    if(!mysql_select_db(MySQLConnection::$database))
-      die("Table error" . mysql_error());
+    MySQLConnection::$db = new mysqli('localhost', MySQLConnection::$username, MySQLConnection::$password, MySQLConnection::$database);
+    if(MySQLConnection::$db->connect_errno > 0 )
+      die("Connection error" . MySQLConnection::$db->connect_error);
   }
 
   public static function makeConnection() {
-    if(!isset(MySQLConnection::$connection))
-      MySQLConnection::$connection = new MySQLConnection;
-    return MySQLConnection::$connection;
+    if(!isset(MySQLConnection::$db))
+      new MySQLConnection;
+    return MySQLConnection::$db;
   }
 
 }
 
-$mysql_connection = MySQLConnection::makeConnection();
+$db = MySQLConnection::makeConnection();
 
 ?>
-

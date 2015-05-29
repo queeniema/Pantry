@@ -16,17 +16,17 @@
 
         $query = "INSERT INTO `items`(`user_id`, `item_name`, `expiration_date`, `quantity`, `categories`, `env_id`)
                     VALUES ('$userid', '$name', '$expirationdate', '$quantity', '$foodcategories', '$storageenv')";
-        $result = mysql_query($query) or die(mysql_error());
+        $result = $db->query($query) or die($db->error);
 
-        $itemid = mysql_insert_id();
+        $itemid = $db->insert_id;
 
         $query2 = "SELECT `env_name` FROM `environments` WHERE `env_id`=$storageenv";
-        $result2 = mysql_query($query2) or die(mysql_error());
-        $row = mysql_fetch_assoc($result2);
+        $result2 = $db->query($query2) or die($db->error);
+        $row = $result2->fetch_assoc();
 
         echo json_encode(array(
             "id"                => $itemid,
-            "name"              => $name, 
+            "name"              => $name,
             "expDate"           => $expirationdate,
             "quantity"          => $quantity,
             "foodCategories"    => $foodcategories,
@@ -40,7 +40,7 @@
 
         $query = "DELETE FROM `items`
                      WHERE user_id = ".$userid." AND item_id = ".$itemid;
-        $result = mysql_query($query) or die(mysql_error());
+        $result = $db->query($query) or die($db->error);
 
         echo $itemid;
     }
@@ -52,13 +52,13 @@
 
         $query = "INSERT INTO `environments`(`user_id`, `env_name`, `temperature`)
                     VALUES ('$userid', '$name', '$temp')";
-        $result = mysql_query($query) or die(mysql_error());
+        $result = $db->query($query) or die($db->error);
 
-        $storageid = mysql_insert_id();
+        $storageid = $db->insert_id;
 
         echo json_encode(array(
             "id"    => $storageid,
-            "name"  => $name, 
+            "name"  => $name,
             "temp"  => $temp,
         ));
     }
@@ -69,7 +69,7 @@
 
         $query = "DELETE FROM `environments`
                      WHERE user_id = ".$userid." AND env_id = ".$envid;
-        $result = mysql_query($query) or die(mysql_error());
+        $result =  $db->query($query) or die($db->error);
 
         echo $envid;
     }
