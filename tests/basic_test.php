@@ -47,7 +47,7 @@ class basic_test extends PHPUnit_Framework_TestCase {
         // checking to make sure we see the invalid credentials warning
         $this->assertContains('Invalid login credentials!', $this->webDriver->getPageSource());
         // checking url to make sure we are still on the landing page
-        $this->assertContains('Pantry/index.php', $this->webDriver->getCurrentURL());
+        $this->assertContains('index.php', $this->webDriver->getCurrentURL());
     }
 
     /**
@@ -68,8 +68,9 @@ class basic_test extends PHPUnit_Framework_TestCase {
         // press login button
         $loginButton = $this->webDriver->findElement(WebDriverBy::id('log-in-button'));
         $loginButton->click();
+        $this->webDriver->manage()->timeouts()->implicitlyWait(4);
         // checking url to make sure we are on the pantry page
-        $this->assertContains('Pantry/pantry.php', $this->webDriver->getCurrentURL());
+        $this->assertContains('pantry.php', $this->webDriver->getCurrentURL());
         // checking that page contains 'Recently Expired' and 'In Pantry'
         $this->assertContains('Recently Expired', $this->webDriver->getPageSource());
         $this->assertContains('In Pantry', $this->webDriver->getPageSource());
@@ -97,7 +98,7 @@ class basic_test extends PHPUnit_Framework_TestCase {
         $logoutDropdown = $this->webDriver->findElement(WebDriverBy::linkText('Log Out'));
         $logoutDropdown->click();
         // checking that we are on the landing page
-        $this->assertContains('Pantry/index.php', $this->webDriver->getCurrentURL());
+        $this->assertContains('index.php', $this->webDriver->getCurrentURL());
         $this->assertContains('About Pantry', $this->webDriver->getPageSource());
     }
 
@@ -111,7 +112,7 @@ class basic_test extends PHPUnit_Framework_TestCase {
         $signupDropdown = $this->webDriver->findElement(WebDriverBy::linkText('Sign Up'));
         $signupDropdown->click();
         // checking that we are on the registration page
-        $this->assertContains('Pantry/sign_up.php', $this->webDriver->getCurrentURL());
+        $this->assertContains('sign_up.php', $this->webDriver->getCurrentURL());
         $this->assertContains('Create a new account', $this->webDriver->getPageSource());
         // fill in user info
         $signupEmail = $this->webDriver->findElement(WebDriverBy::id('sign-up-email'));
@@ -128,10 +129,10 @@ class basic_test extends PHPUnit_Framework_TestCase {
         // wait for at most 10 seconds until the URL is 'http://.../Pantry/index.php'.
         // check again 500ms after the previous attempt.
         $this->webDriver->wait(10, 500)->until(function () {
-            return (strpos($this->webDriver->getCurrentURL(),'Pantry/index.php') !== false);
+            return (strpos($this->webDriver->getCurrentURL(),'index.php') !== false);
         });
         // checking that we have been redirected to the landing page
-        $this->assertContains('Pantry/index.php', $this->webDriver->getCurrentURL());
+        $this->assertContains('index.php', $this->webDriver->getCurrentURL());
         $this->assertContains('About Pantry', $this->webDriver->getPageSource());
         // try to log in with new credentials
         // find log in button by its id
@@ -146,7 +147,7 @@ class basic_test extends PHPUnit_Framework_TestCase {
         $loginButton = $this->webDriver->findElement(WebDriverBy::id('log-in-button'));
         $loginButton->click();
         // checking url to make sure we are on the pantry page
-        $this->assertContains('Pantry/pantry.php', $this->webDriver->getCurrentURL());
+        $this->assertContains('pantry.php', $this->webDriver->getCurrentURL());
         // checking that page contains 'Recently Expired' and 'In Pantry'
         $this->assertContains('Recently Expired', $this->webDriver->getPageSource());
         $this->assertContains('In Pantry', $this->webDriver->getPageSource());
@@ -176,38 +177,29 @@ class basic_test extends PHPUnit_Framework_TestCase {
         $this->assertNotEquals($itemAddModal->getCSSValue('display'), 'none');
         $this->assertContains('Add an item', $this->webDriver->getPageSource());
         // press enter manually button
-        $this->webDriver->findElement(WebDriverBy::id('btn-enter-manually'))->click();
+        $this->webDriver->findElement(WebDriverBy::id('btn-enter-common'))->click();
         // fill in item info
-        $itemName = $this->webDriver->findElement(WebDriverBy::id('item-name'));
-        $expirationDate = $this->webDriver->findElement(WebDriverBy::id('bs-datepicker'));
-        $itemName->sendKeys('TestItem');
-        $expirationDate->sendKeys('06/01/2015');
+        $egg = $this->webDriver->findElement(WebDriverBy::xpath('//button[@title="Egg Whites"]'));
+        $egg->click();
+        $milk = $this->webDriver->findElement(WebDriverBy::xpath('//label[contains(., "Milk")]/..'));
+        $milk->click();
         // press continue button
         $continueButton = $this->webDriver->findElement(WebDriverBy::xpath('//button[contains(.,"Continue")]'));
         $continueButton->click();
-        // fill in item info
         $quantity = $this->webDriver->findElement(WebDriverBy::id('quantity-input'));
         $quantity->clear();
         $quantity->sendKeys('3');
-        $categories = $this->webDriver->findElement(WebDriverBy::xpath('//button/span[contains(., "None selected")]/..'));
-        $categories->click();
-        $grainsbeans = $this->webDriver->findElement(WebDriverBy::xpath('//input[@value="grains-beans"]/..'));
-        $grainsbeans->click();
-        $vegetables = $this->webDriver->findElement(WebDriverBy::xpath('//input[@value="vegetables"]/..'));
-        $vegetables->click();
-        $environments = $this->webDriver->findElement(WebDriverBy::xpath('//select[@id="select-storage-env"]/following-sibling::div'));
-        $environments->click();
+        $expirationDate = $this->webDriver->findElement(WebDriverBy::id('bs-datepicker'));
+        $expirationDate->sendKeys('06/01/2015');
         // press submit button
         $submitButton = $this->webDriver->findElement(WebDriverBy::id('btn-submit'));
         $submitButton->click();
         // checking that new item circle is created
         $this->webDriver->manage()->timeouts()->implicitlyWait(4);
-        $this->assertContains('TestItem', $this->webDriver->getPageSource());
-        // refresh page
-        $this->webDriver->navigate()->refresh();
         // click on new item and verify info
-        $newItem = $this->webDriver->findElement(WebDriverBy::xpath('//span[contains(., "TestItem")]/..'));
+        $newItem = $this->webDriver->findElement(WebDriverBy::xpath('//div[contains(@class, "egg-whites")]'));
         $newItem->click();
+        $this->webDriver->manage()->timeouts()->implicitlyWait(4);
         // checking modal window appeared with input values
         $itemModal = $this->webDriver->findElement(WebDriverBy::id('view-item-modal'));
         $this->assertNotEquals($itemModal->getCSSValue('display'), 'none');
@@ -216,7 +208,7 @@ class basic_test extends PHPUnit_Framework_TestCase {
         $itemQuantityView = $this->webDriver->findElement(WebDriverBy::id('item-quantity-view'));
         $this->assertEquals($itemQuantityView->getText(), '3');
         $itemCategoriesView = $this->webDriver->findElement(WebDriverBy::id('item-categories-view'));
-        $this->assertEquals($itemCategoriesView->getText(), 'grains-beans,vegetables');
+        $this->assertEquals($itemCategoriesView->getText(), 'Dairy');
         $itemStorageEnvView = $this->webDriver->findElement(WebDriverBy::id('item-storage-env-view'));
         $this->assertEquals($itemStorageEnvView->getText(), 'test_env');
     }
@@ -243,10 +235,10 @@ class basic_test extends PHPUnit_Framework_TestCase {
         $storageEnvironments = $this->webDriver->findElement(WebDriverBy::linkText('Storage Environments'));
         $storageEnvironments->click();
         // checking url to make sure we are on the storage environments page
-        $this->assertContains('Pantry/environment.php', $this->webDriver->getCurrentURL());
+        $this->assertContains('environment.php', $this->webDriver->getCurrentURL());
         // add a new storage environment
         // click add storage button
-        $addStorageButton = $this->webDriver->findElement(WebDriverBy::id('add-storage'));
+        $addStorageButton = $this->webDriver->findElement(WebDriverBy::id('add-item'));
         $addStorageButton->click();
         // checking modal window shows up
         $envAddModal = $this->webDriver->findElement(WebDriverBy::id('add-storage-modal'));
