@@ -60,6 +60,47 @@
         ));
     }
 
+    if ((isset($_POST['sl-item-name']) && $_POST['sl-item-name'] != "") || isset($_POST['sl-food-id'])) {
+        $userid = $_SESSION['user-id'];
+
+        // Manual Entry
+        if((isset($_POST['sl-item-name']) && $_POST['sl-item-name'] != "") ) {
+            $name = $_POST['sl-item-name'];
+        }
+        // Quick Entry
+        else {
+            $name = "";
+            $food_id = $_POST['sl-food-id'];
+            $query = "SELECT * FROM `foods` WHERE food_id=$food_id";
+            $result = $db->query($query) or die($db->error);
+            if ($result->num_rows) {
+                $row = $result->fetch_assoc();
+                $name = $row['food_name'];
+            }
+        }
+
+        $quantity = $_POST['quantity'];
+
+        // See if item is already in the list
+        $query = "SELECT * FROM `sl_items` WHERE user_id='$userid' AND item_name='$name'";
+        $result = $db->query($query) or die($db->error);
+        if ($result->num_rows) {
+            // If so, increment the quantity to buy
+            $query = "UPDATE `sl_items` SET quantity = quantity + $quantity WHERE user_id='$userid' AND item_name='$name'";
+            $result = $db->query($query) or die($db->error);
+        }
+        // If none of that item is in the list, add it to the list
+        else {
+            $query = "INSERT INTO `sl_items` VALUES ($userid, '$name', $quantity, 0)";
+            $result = $db->query($query) or die($db->error);
+        }
+
+        echo json_encode(array(
+            "name"              => $name,
+            "quantity"          => $quantity
+        ));
+    }
+
     if (isset($_POST['remove-item-id'])) {
         $userid = $_SESSION['user-id'];
         $itemid = $_POST['remove-item-id'];

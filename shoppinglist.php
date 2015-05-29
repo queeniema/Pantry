@@ -6,6 +6,16 @@
     // SQL query to retrieve all items in the database associated wih the current user
     $query = "SELECT * FROM sl_items I WHERE I.user_id = " . $userid;
     $result = $db->query($query) or die($db->error);
+
+     // SQL query to retrieve all categories
+    $query = "SELECT * FROM categories ORDER BY cat_id ASC";
+    $cat_result = $db->query($query) or die($db->error);
+    $cat_form_html = "";
+    $cat_sort_html = '<li><a class="active" href="#" data-group="all">All</a></li>';
+    while($row = $cat_result->fetch_assoc()){
+        $cat_form_html .= "<option value='".$row['cat_id']."'>".$row['cat_name']."</option>";
+        $cat_sort_html .= '<li><a href="#" data-group="'.$row['cat_name'].'">'.$row['cat_name'].'</a></li>';
+    }
 ?>
 
 <!DOCTYPE html>
@@ -89,19 +99,81 @@
                             <h4 class="media-heading"><?php echo $row['item_name']; ?></h4>
                             Quantity: <?php echo $row['quantity']; ?>
                         </div>
+                        <div class="media-right">
+                            <button type="button" class="btn <?php echo $row['checked'] ? 'btn-success' : 'btn-default'; ?> check-item">✓</button>
+                            <button type="button" class="btn btn-danger delete-item">✖</button>
+                        </div>
                     </li>
                 </ul>
             </li>
             <?php } ?>
         </ul>
 
-        <div id="grid-wrapper">
-            <div id="in-pantry-grid" class="row">
+        <button type="button" class="btn btn-default" data-groups='["all"]' data-toggle="modal" data-target="#add-item-modal">Add Item</button>
+        <button type="button" class="btn btn-default" id="finish-trip">Finish Shopping Trip</button>
+    </div>
 
-                <div class="item" id="add-item" data-groups='["all"]' data-toggle="modal" data-target="#add-item-modal"></div>
+    <form class="modal multi-step add" id="add-item-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title step-1" data-step="1"><h3>Add an item</h3><h5>Step 1: Choose entry method</h5></div>
+                    <div class="modal-title step-2" data-step="2"><h3>Add an item Quickly</h3><h5>Step 2: Enter item information</h5></div>
+                    <div class="modal-title step-3" data-step="3"><h3>Add an item Manually</h3><h5>Step 2: Enter item information</h5></div>
+                </div>
+                <div class="modal-body step-1" data-step="1">
+                    <div class="entry-method-outer-container">
+                        <div class="entry-method-inner-container">
+                            <button type="button" class="custom-button btn-entry-method" id="btn-enter-common" onclick="sendEvent('#add-item-modal', 2)">Enter Quickly</button>
+                            <br\> <br\> <br\>
+                            <button type="button" class="custom-button btn-entry-method" id="btn-enter-manually" onclick="sendEvent('#add-item-modal', 3)">Enter Manually</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body step-2" data-step="2">
+                    <div class="container-fluid">
+                        <div id="item-info-container">
+                            <span class="form-label">Category:</span>
+                            <br/>
+                            <div class="btn-group" style="width: 200px">
+                                <select id="select-food-catagories" onChange="handleCategoryChange(this);">
+                                    <?php echo $cat_form_html; ?>
+                                </select>
+                            </div>
+                            <br/><br/><br/>
+
+                            <div class="btn-group" style="width: 200px" id="select-food-div">
+                            </div>
+                            <br/><br/><br/>
+
+                            <span class="form-label">Quantity:</span>
+                            <input id="quantity-input" name= "quantity" class="form-control" type="number" value="1" min="1" max="10" />
+                            <br/><br/><br/>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body step-3" data-step="3">
+                    <div class="container-fluid">
+                        <div id="item-info-container">
+                            <span class="form-label">Item Name:</span>
+                            <br/>
+                            <input class="form-control" type="text" name="sl-item-name" id="item-name" required/>
+                            <br/>
+                            <span class="form-label">Quantity:</span>
+                            <input id="quantity-input" name= "quantity" class="form-control" type="number" value="1" min="1" max="10" />
+                            <br/><br/><br/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-modal-footer" data-dismiss="modal">Close</button>
+                    <button class="btn btn-modal-footer step step-2" type="submit" name="submit" id="btn-submit1" data-step="2" data-dismiss="modal">Submit</button>
+                    <button class="btn btn-modal-footer step step-3" type="submit" name="submit" id="btn-submit2" data-step="3" data-dismiss="modal">Submit</button>
+                </div>
             </div>
         </div>
-    </div>
+    </form>
 
     <!-- Footer -->
     <footer class="small-footer">
@@ -123,6 +195,93 @@
         sendEvent = function(sel, step) {
             $(sel).trigger('next.m.' + step);
         }
+        handleCategoryChange = function() {
+            $.post( "ajax.php?sl-food-from-cat-id="+$('#select-food-catagories')[0].value, function( data ) {
+              $( "#select-food-div" ).html( data );
+              $('#select-food-id').multiselect();
+            });
+        };
+    </script>
+    <!-- For Boostrap multi-select -->
+    <script type="text/javascript" src="js/bootstrap-multiselect.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#select-food-catagories').multiselect();
+            $('#select-food-category-id').multiselect();
+            //load initial food
+            handleCategoryChange();
+
+            // Handle adding item to shopping list
+            $("button#btn-submit1, button#btn-submit2").click(function(){
+                $.ajax({
+                    type: "POST",
+                    url: "process.php",
+                    data: $('form.add').serialize(),
+                    success: function(response){
+                        window.location.href = 'shoppinglist.php';
+                    },
+                    error: function(){
+                        alert("failure");
+                    }
+                });
+            });
+
+            $(".check-item").click(function(){
+                var check = $(this);
+                var itemname = check.closest(".media").find(".media-heading").html();
+                $.ajax({
+                    type: "POST",
+                    url: "shoppingprocess.php",
+                    data: {
+                        "action" : "check-item",
+                        "item-name" : itemname
+                    },
+                    success: function(response){
+                        check.removeClass("btn-default");
+                        check.addClass("btn-success");
+                        console.log(response);
+                    },
+                    error: function(){
+                        alert("failure");
+                    }
+                });
+            });
+
+            $(".delete-item").click(function(){
+                var del = $(this);
+                var itemname = del.closest(".media").find(".media-heading").html();
+                $.ajax({
+                    type: "POST",
+                    url: "shoppingprocess.php",
+                    data: {
+                        "action" : "delete-item",
+                        "item-name" : itemname
+                    },
+                    success: function(response){
+                        del.closest(".list-group-item").remove();
+                    },
+                    error: function(){
+                        alert("failure");
+                    }
+                });
+            });
+
+            $("#finish-trip").click(function(){
+                $.ajax({
+                    type: "POST",
+                    url: "shoppingprocess.php",
+                    data: {
+                        "action" : "finish-trip"
+                    },
+                    success: function(response){
+                        window.location.href = 'pantry.php';
+                    },
+                    error: function(){
+                        alert("failure");
+                    }
+                });
+            });
+        });
     </script>
 
 </body>

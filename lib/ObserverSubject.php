@@ -21,19 +21,30 @@ class ShoppingList extends AbstractObserver {
 		if (!$subject->expired && time() > strtotime($subject->expiration_date)) {
 			$user_id = $subject->user_id;
 			$item_name = $subject->item_name;
+			$food_id = $subject->food_id;
+
+			$db = MySQLConnection::makeConnection();
+
+			if (empty($item_name)) {
+				$query = "SELECT * FROM `foods` WHERE food_id='$food_id'";
+				$result = $db->query($query) or die($db->error);
+				if ($result->num_rows) {
+		            $row = $result->fetch_assoc();
+		            $item_name = $row['food_name'];
+		        }
+			}
 
 			// See if item is already in the list
 			$query = "SELECT * FROM `sl_items` WHERE user_id='$user_id' AND item_name='$item_name'";
 			$result = $db->query($query) or die($db->error);
 	        if ($result->num_rows) {
-	            $row = $result->fetch_assoc();
 	            // If so, increment the quantity to buy
-	            $query = "UPDATE `sl_items` SET quantity = quantity + $subject->quantity";
+	            $query = "UPDATE `sl_items` SET quantity = quantity + $subject->quantity WHERE user_id='$user_id' AND item_name='$item_name'";
 				$result = $db->query($query) or die($db->error);
 	        }
 	        // If none of that item is in the list, add it to the list
 	        else {
-	        	$query = "INSERT INTO `sl_items` VALUES ($subject->user_id, '$subject->item_name', $subject->quantity)";
+	        	$query = "INSERT INTO `sl_items` VALUES ($user_id, '$item_name', $subject->quantity, 0)";
 	        	$result = $db->query($query) or die($db->error);
 	        }
 
@@ -50,6 +61,8 @@ class Item extends AbstractSubject {
 	public $item_id;
 
 	public $user_id;
+
+	public $food_id;
 
 	public $item_name;
 
