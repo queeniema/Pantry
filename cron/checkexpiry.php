@@ -1,6 +1,7 @@
 <?php
 
-require('../lib/ObserverSubject.php');
+$path = dirname(__FILE__);
+require($path . '/../lib/ObserverSubject.php');
 
 // Obtain all the items
 $items = array();
