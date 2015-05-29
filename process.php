@@ -2,35 +2,61 @@
     session_start();
     require('lib/MySQLConnection.php');
 
-    if (isset($_POST['item-name'])) {
+    if ((isset($_POST['item-name']) && $_POST['item-name'] != "") || isset($_POST['food-id'])) {
         $userid = $_SESSION['user-id'];
-        $name = $_POST['item-name'];
-        $expirationdate = date('Y-m-d', strtotime($_POST['expiration-date']));
+        if((isset($_POST['item-name']) && $_POST['item-name'] != "") )
+            $name = $_POST['item-name'];
+        else
+            $name = "";
         $quantity = $_POST['quantity'];
         $storageenv = $_POST['storage-env'];
-        $foodcategories = array();
-        foreach($_POST['food-categories'] as $k => $v) {
-            array_push($foodcategories, $v);
-        }
-        $foodcategories = implode(", ", $foodcategories);
 
-        $query = "INSERT INTO `items`(`user_id`, `item_name`, `expiration_date`, `quantity`, `categories`, `env_id`)
-                    VALUES ('$userid', '$name', '$expirationdate', '$quantity', '$foodcategories', '$storageenv')";
+        $query = "SELECT * FROM `environments` WHERE `env_id`=$storageenv";
+        $result = $db->query($query) or die($db->error);
+        $storage_result = $result->fetch_assoc();
+
+        if($storage_result['temperature'] <= 32)
+            $sqlenv = 'food_expire_freezer';
+        else if($storage_result['temperature'] <= 39)
+            $sqlenv = 'food_expire_fridge';
+        else
+            $sqlenv = 'food_expire_room';
+
+        if(isset($_POST['item-name']) && $_POST['item-name'] != "")
+            $foodid = $_POST['food-category-id']; // This because the food-category-id also is the same as the "other" related food item for the category
+        else
+            $foodid = $_POST['food-id'];
+        if(isset($_POST['expiration-date']) && $_POST['expiration-date'] != "")
+            $expirationdate = date('Y-m-d', strtotime($_POST['expiration-date']));
+        else{
+            $query = "SELECT *
+                      FROM foods
+                      WHERE food_id = ".$foodid;
+            $food_result = $db->query($query) or die($db->error);
+            $row = $food_result->fetch_assoc(); //need to figure out what expiration time to use based on storage env still
+            $expirationdate = date('Y-m-d', strtotime('+'.$row[$sqlenv].' hour'));
+        }
+
+        $query = "INSERT INTO `items`(`user_id`, `item_name`, `food_id`, `expiration_date`, `quantity`, `env_id`)
+                    VALUES ('$userid', '$name', '$foodid', '$expirationdate', '$quantity', '$storageenv')";
         $result = $db->query($query) or die($db->error);
 
         $itemid = $db->insert_id;
 
-        $query2 = "SELECT `env_name` FROM `environments` WHERE `env_id`=$storageenv";
-        $result2 = $db->query($query2) or die($db->error);
-        $row = $result2->fetch_assoc();
+        $query = "SELECT * FROM foods F, categories C WHERE F.food_id=$foodid AND F.food_category = C.cat_id";
+        $result = $db->query($query) or die($db->error);
+        $food_result = $result->fetch_assoc();
+        if($name == ""){
+            $name = $food_result['food_name'];
+        }
 
         echo json_encode(array(
             "id"                => $itemid,
             "name"              => $name,
             "expDate"           => $expirationdate,
             "quantity"          => $quantity,
-            "foodCategories"    => $foodcategories,
-            "storageEnv"        => $row['env_name']
+            "foodCategories"    => $food_result['cat_name'],
+            "storageEnv"        => $storage_result['env_name']
         ));
     }
 

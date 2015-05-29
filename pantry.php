@@ -6,21 +6,31 @@
     if(!isset($userid))
         header("Location: index.php");
     // SQL query to retrieve all items in the database associated wih the current user
-    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, I.categories, E.env_name
-                FROM items I, environments E
-                WHERE I.user_id = " . $userid . " AND I.env_id = E.env_id
+    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, E.env_name, F.food_name, C.cat_name
+                FROM items I, environments E, foods F, categories C
+                WHERE I.user_id = " . $userid . " AND I.env_id = E.env_id AND F.food_id = I.food_id AND F.food_category = C.cat_id and I.expired = false
                 ORDER BY I.expiration_date DESC";
     $items_result = $db->query($query) or die($db->error);
+
+    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, E.env_name, F.food_name, C.cat_name
+                FROM items I, environments E, foods F, categories C
+                WHERE I.user_id = " . $userid . " AND I.env_id = E.env_id AND F.food_id = I.food_id AND F.food_category = C.cat_id AND I.expired = true
+                ORDER BY I.expiration_date DESC";
+    $expired_result = $db->query($query) or die($db->error);
 
     // SQL query to retrieve all storange environments in the database associated wih the current user
     $query = "SELECT * FROM environments WHERE user_id = ". $userid;
     $envs_result = $db->query($query) or die($db->error);
 
-    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, I.categories
-                FROM items I
-                WHERE I.user_id = " . $userid . " AND I.expired = TRUE
-                ORDER BY I.expiration_date DESC";
-    $expired_result = $db->query($query) or die($db->error);
+    // SQL query to retrieve all categories
+    $query = "SELECT * FROM categories ORDER BY cat_id ASC";
+    $cat_result = $db->query($query) or die($db->error);
+    $cat_form_html = "";
+    $cat_sort_html = '<li><a class="active" href="#" data-group="all">All</a></li>';
+    while($row = $cat_result->fetch_assoc()){
+        $cat_form_html .= "<option value='".$row['cat_id']."'>".$row['cat_name']."</option>";
+        $cat_sort_html .= '<li><a href="#" data-group="'.$row['cat_name'].'">'.$row['cat_name'].'</a></li>';
+    }
 ?>
 
 <!DOCTYPE html>
@@ -119,7 +129,7 @@
                             "\" data-item-quantity=\"" + data.quantity +
                             "\" data-item-categories=\"" + data.foodCategories +
                             "\" data-item-storage-env=\"" + data.storageEnv +
-                            "\" data-groups='[\"all\"]'" +
+                            "\" data-groups='[\"all\", \""+data.foodCategories+"\"]'" +
                             "\" data-toggle=\"modal\"" +
                             "\" data-target=\"#view-item-modal\">" +
                             "<span class=\"description\">" + data.name + "</span></div>");
@@ -215,32 +225,28 @@
     <h1 id="recently-expired-header">Recently Expired</h1>
     <div id="recently-expired-container" class="container-fluid">
         <ul id="recently-expired-filter" class="list-inline">
-            <li><a class="active" href="#" data-group="all">All</a></li>
-            <li><a href="#" data-group="dairy">Dairy</a></li>
-            <li><a href="#" data-group="fruits">Fruits</a></li>
-            <li><a href="#" data-group="grains-beans">Grains &amp; Beans</a></li>
-            <li><a href="#" data-group="meat-proteins">Meat &amp; Proteins</a></li>
-            <li><a href="#" data-group="sweets">Sweets</a></li>
-            <li><a href="#" data-group="vegetables">Vegetables</a></li>
-            <li><a href="#" data-group="liquids">Liquids</a></li>
+            <?php echo $cat_sort_html; ?>
         </ul>
 
         <div id="grid-wrapper">
             <div id="recently-expired-grid">
                 <?php while($row = $expired_result->fetch_assoc()) : ?>
-                    <?php if ((time() - strtotime($row['expiration_date'])) < (3600 * 24 * 7)): ?>
+                    <?php if ((time() - strtotime($row['expiration_date'])) < (3600 * 24 * 7)) : ?>
                         <?php
-                            $categories = explode(',', $row['categories']);
-                            $datagroups = array();
-                            foreach ($categories as $category) {
-                                $datagroups[] = "\"" . $category . "\"";
-                            }
-                            $datagroups = implode(',', $datagroups);
+                            if($row['item_name'] == "") $row['item_name'] = $row['food_name'];
                         ?>
-                        <div class="item <?php echo $row['item_name']; ?>" id="item-<?php echo $row['item_id']; ?>"
-                            data-groups='[<?php echo $datagroups; ?>]'>
-                            <span class="description"><?php echo $row['item_name']; ?></span>
-                        </div>
+                    <div class="item <?php echo $row['item_name']; ?>" id="item-<?php echo $row['item_id']; ?>"
+                        data-item-id                =   "<?php echo $row['item_id']; ?>"
+                        data-item-name              =   "<?php echo $row['item_name']; ?>"
+                        data-item-expiration-date   =   "<?php echo $row['expiration_date']; ?>"
+                        data-item-quantity          =   "<?php echo $row['quantity']; ?>"
+                        data-item-categories        =   "<?php echo $row['cat_name']; ?>"
+                        data-item-storage-env       =   "<?php echo $row['env_name']; ?>"
+                        data-groups                 =   '["all", "<?php echo $row['cat_name']; ?>"]'
+                        data-toggle                 =   "modal"
+                        data-target                 =   "#view-item-modal">
+                        <span class="description"><?php echo $row['item_name']; ?></span>
+                    </div>
                     <?php endif; ?>
                 <?php endwhile; ?>
             </div>
@@ -252,34 +258,28 @@
     <h1 id="in-pantry-header">In Pantry</h1>
     <div id="in-pantry-container" class="container-fluid">
         <ul id="in-pantry-filter" class="list-inline">
-            <li><a class="active" href="#" data-group="all">All</a></li>
-            <li><a href="#" data-group="dairy">Dairy</a></li>
-            <li><a href="#" data-group="fruits">Fruits</a></li>
-            <li><a href="#" data-group="grains-beans">Grains &amp; Beans</a></li>
-            <li><a href="#" data-group="meat-proteins">Meat &amp; Proteins</a></li>
-            <li><a href="#" data-group="sweets">Sweets</a></li>
-            <li><a href="#" data-group="vegetables">Vegetables</a></li>
-            <li><a href="#" data-group="liquids">Liquids</a></li>
+            <?php echo $cat_sort_html; ?>
         </ul>
 
         <div id="grid-wrapper">
             <div id="in-pantry-grid" class="row">
                 <!-- Populate grid dynamically based on items in the database -->
                 <?php while($row = $items_result->fetch_assoc()) : ?>
-                    <?php if (!$row['expired']) : ?>
+                        <?php
+                            if($row['item_name'] == "") $row['item_name'] = $row['food_name'];
+                        ?>
                     <div class="item <?php echo $row['item_name']; ?>" id="item-<?php echo $row['item_id']; ?>"
                         data-item-id                =   "<?php echo $row['item_id']; ?>"
                         data-item-name              =   "<?php echo $row['item_name']; ?>"
                         data-item-expiration-date   =   "<?php echo $row['expiration_date']; ?>"
                         data-item-quantity          =   "<?php echo $row['quantity']; ?>"
-                        data-item-categories        =   "<?php echo $row['categories']; ?>"
+                        data-item-categories        =   "<?php echo $row['cat_name']; ?>"
                         data-item-storage-env       =   "<?php echo $row['env_name']; ?>"
-                        data-groups                 =   '["all", "meat-proteins"]'
+                        data-groups                 =   '["all", "<?php echo $row['cat_name']; ?>"]'
                         data-toggle                 =   "modal"
                         data-target                 =   "#view-item-modal">
                         <span class="description"><?php echo $row['item_name']; ?></span>
                     </div>
-                    <?php endif; ?>
                 <?php endwhile; ?>
                 <div class="item" id="add-item" data-groups='["all"]' data-toggle="modal" data-target="#add-item-modal"></div>
             </div>
@@ -297,7 +297,7 @@
                     <div id="view-item-container">
                         <p>Expiration Date: <span id="item-expiration-date-view"></span></p><br/>
                         <p>Quantity: <span id="item-quantity-view"></span></p><br/>
-                        <p>Categories: <span id="item-categories-view"></span></p><br/>
+                        <p>Category: <span id="item-categories-view"></span></p><br/>
                         <p>Storage Environment: <span id="item-storage-env-view"></span></p>
                         <form class="modal remove">
                             <input class="form-control" type="hidden" name="remove-item-id" id="remove-item-id"/>
@@ -318,14 +318,17 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <div class="modal-title step-1" data-step="1"><h3>Add an item</h3><h5>Step 1: Choose entry method</h5></div>
-                    <div class="modal-title step-2" data-step="2"><h3>Add an item manually</h3><h5>Step 2: Enter item information</h5></div>
-                    <div class="modal-title step-3" data-step="3"><h3>Add an item manually</h3><h5>Final Step: Enter more information</h5></div>
+                    <div class="modal-title step-2" data-step="2"><h3>Add an item Quickly</h3><h5>Step 2: Enter item information</h5></div>
+                    <div class="modal-title step-3" data-step="3"><h3>Add an item Manually</h3><h5>Step 2: Enter item information</h5></div>
+                    <div class="modal-title step-4" data-step="4"><h3>Add an item</h3><h5>Final Step: Enter expire information</h5></div>
                 </div>
                 <div class="modal-body step-1" data-step="1">
                     <div class="entry-method-outer-container">
                         <div class="entry-method-inner-container">
-                            <button type="button" class="custom-button btn-entry-method" id="btn-enter-manually" onclick="sendEvent('#add-item-modal', 2)">Enter Manually</button>
-                            <div class="empty-space"></div>
+                            <button type="button" class="custom-button btn-entry-method" id="btn-enter-common" onclick="sendEvent('#add-item-modal', 2)">Enter Quickly</button>
+                            <br\> <br\> <br\>
+                            <button type="button" class="custom-button btn-entry-method" id="btn-enter-manually" onclick="sendEvent('#add-item-modal', 3)">Enter Manually</button>
+                            <br\> <br\> <br\>
                             <button type="button" class="custom-button btn-entry-method" id="btn-can-barcode">Scan Barcode</button>
                         </div>
                     </div>
@@ -333,39 +336,49 @@
                 <div class="modal-body step-2" data-step="2">
                     <div class="container-fluid">
                         <div id="item-info-container">
-                            <span class="form-label">Item Name:</span>
+                            <span class="form-label">Category:</span>
                             <br/>
-                            <input class="form-control" type="text" name="item-name" id="item-name" required/>
-                            <br/>
+                            <div class="btn-group" style="width: 200px">
+                                <select id="select-food-catagories" onChange="handleCategoryChange(this);">
+                                    <?php echo $cat_form_html; ?>
+                                </select>
+                            </div>
+                            <br/><br/><br/>
 
-                            <span class="form-label">Expiration Date (if any):</span>
-                            <br/>
-                            <input class="form-control" name="expiration-date" type="text" id="bs-datepicker">
-                            <br/>
+                            <div class="btn-group" style="width: 200px" id="select-food-div">
+                            </div>
+                            <br/><br/><br/>
+
                         </div>
                     </div>
                 </div>
                 <div class="modal-body step-3" data-step="3">
                     <div class="container-fluid">
                         <div id="item-info-container">
-                            <span class="form-label">Quantity:</span>
-                            <input id="quantity-input" name= "quantity" class="form-control" type="number" value="1" min="1" max="10" />
+                            <span class="form-label">Item Name:</span>
+                            <br/>
+                            <input class="form-control" type="text" name="item-name" id="item-name" required/>
                             <br/>
 
-                            <span class="form-label">Categor(ies):</span>
-                            <br/>
                             <div class="btn-group" style="width: 200px">
-                                <select name="food-categories[]" id="select-food-catagories" multiple="multiple">
-                                    <option value="dairy">Dairy</option>
-                                    <option value="fruits">Fruits</option>
-                                    <option value="grains-beans">Grains &amp; Beans</option>
-                                    <option value="meat-proteins">Meat &amp; Proteins</option>
-                                    <option value="sweets">Sweets</option>
-                                    <option value="vegetables">Vegetables</option>
-                                    <option value="liquids">Liquids</option>
+                                <select name="food-category-id" id="select-food-category-id">
+                                    <?php echo $cat_form_html; ?>
                                 </select>
                             </div>
                             <br/><br/><br/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body step-4" data-step="4">
+                    <div class="container-fluid">
+                        <div id="item-info-container">
+                            <span class="form-label">Quantity:</span>
+                            <input id="quantity-input" name= "quantity" class="form-control" type="number" value="1" min="1" max="10" />
+                            <br/>
+                            <span class="form-label">Expiration Date (if any):</span>
+                            <br/>
+                            <input class="form-control" name="expiration-date" type="text" id="bs-datepicker">
+                            <br/>
 
                             <span class="form-label">Storage Environment:</span>
                             <br/>
@@ -381,10 +394,9 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-modal-footer" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-modal-footer step step-2" data-step="2" onclick="sendEvent('#add-item-modal', 1)">Back</button>
-                    <button type="button" class="btn btn-modal-footer step step-2" data-step="2" onclick="sendEvent('#add-item-modal', 3)">Continue</button>
-                    <button type="button" class="btn btn-modal-footer step step-3" data-step="3" onclick="sendEvent('#add-item-modal', 2)">Back</button>
-                    <button class="btn btn-modal-footer step step-3" type="submit" name="submit" id="btn-submit" data-step="3" data-dismiss="modal">Submit</button>
+                    <button type="button" class="btn btn-modal-footer step step-2" data-step="2" onclick="sendEvent('#add-item-modal', 4)">Continue</button>
+                    <button type="button" class="btn btn-modal-footer step step-3" data-step="3" onclick="sendEvent('#add-item-modal', 4)">Continue</button>
+                    <button class="btn btn-modal-footer step step-4" type="submit" name="submit" id="btn-submit" data-step="4" data-dismiss="modal">Submit</button>
                 </div>
             </div>
         </div>
@@ -409,7 +421,13 @@
     <script>
         sendEvent = function(sel, step) {
             $(sel).trigger('next.m.' + step);
-        }
+        };
+        handleCategoryChange = function() {
+            $.post( "ajax.php?food-from-cat-id="+$('#select-food-catagories')[0].value, function( data ) {
+              $( "#select-food-div" ).html( data );
+              $('#select-food-id').multiselect();
+            });
+        };
     </script>
     <!-- For Bootstrap datepicker -->
     <script src="js/bootstrap-datepicker.js"></script>
@@ -427,6 +445,9 @@
         $(document).ready(function() {
             $('#select-food-catagories').multiselect();
             $('#select-storage-env').multiselect();
+            $('#select-food-category-id').multiselect();
+            //load initial food
+            handleCategoryChange();
         });
     </script>
 
