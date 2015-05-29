@@ -50,6 +50,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/landing-page.css" type="text/css">
     <link rel="stylesheet" href="css/pantry-page.css" type="text/css">
+    <link rel="stylesheet" href="css/icons.css" type="text/css">
     <!-- Custom Fonts --t
     <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css" type="text/css">
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:100,300,500,700" type="text/css">

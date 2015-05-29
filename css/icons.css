@@ -1,0 +1,95 @@
+/* Storage Environments */
+.storage {
+    background-image: url("../img/storage.jpg");
+}
+
+/* Dairy */
+.egg-whites { background-image: url("../img/food/dairy/egg-whites.jpg"); }
+.egg-yolk { background-image: url("../img/food/dairy/egg-yolk.jpg"); }
+.egg-shelled { background-image: url("../img/food/dairy/egg-shelled.jpg"); }
+.milk { background-image: url("../img/food/dairy/milk.jpg"); }
+.soy-milk { background-image: url("../img/food/dairy/soy-milk.jpg"); }
+.sour-cream { background-image: url("../img/food/dairy/sour-cream.jpg"); }
+.whipped-cream { background-image: url("../img/food/dairy/whipped-cream.jpg"); }
+.yogurt { background-image: url("../img/food/dairy/yogurt.jpg"); }
+
+/* Fruits */
+.apple-sliced { background-image: url("../img/food/fruits/apple-sliced.jpg"); }
+.apple-whole { background-image: url("../img/food/fruits/apple-whole.jpg"); }
+.apricot-sliced { background-image: url("../img/food/fruits/apricot-sliced.jpg"); }
+.apricot-whole { background-image: url("../img/food/fruits/apricot-whole.jpg"); }
+.avocado-sliced { background-image: url("../img/food/fruits/avocado-sliced.jpg"); }
+.avocado-whole { background-image: url("../img/food/fruits/avocado-whole.jpg"); }
+.banana-sliced { background-image: url("../img/food/fruits/banana-sliced.jpg"); }
+.banana-whole { background-image: url("../img/food/fruits/banana-whole.jpg"); }
+.cantaloupe-sliced { background-image: url("../img/food/fruits/cantaloupe-sliced.jpg"); }
+.cantaloupe-whole { background-image: url("../img/food/fruits/cantaloupe-whole.jpg"); }
+.grapes { background-image: url("../img/food/fruits/grapes.jpg"); }
+.kiwi-sliced { background-image: url("../img/food/fruits/kiwi-sliced.jpg"); }
+.kiwi-whole { background-image: url("../img/food/fruits/kiwi-whole.jpg"); }
+.orange-sliced { background-image: url("../img/food/fruits/orange-sliced.jpg"); }
+.orange-whole { background-image: url("../img/food/fruits/orange-whole.jpg"); }
+.peach-sliced { background-image: url("../img/food/fruits/peach-sliced.jpg"); }
+.peach-whole { background-image: url("../img/food/fruits/peach-whole.jpg"); }
+.pear-sliced { background-image: url("../img/food/fruits/pear-sliced.jpg"); }
+.pear-whole { background-image: url("../img/food/fruits/pear-whole.jpg"); }
+.strawberries { background-image: url("../img/food/fruits/strawberries.jpg"); }
+
+/* Vegetables */
+.artichoke { background-image: url("../img/food/vegetables/artichoke.jpg"); }
+.asparagus { background-image: url("../img/food/vegetables/asparagus.jpg"); }
+.broccoli { background-image: url("../img/food/vegetables/broccoli.jpg"); }
+.celery { background-image: url("../img/food/vegetables/celery.jpg"); }
+.kale { background-image: url("../img/food/vegetables/kale.jpg"); }
+.potato { background-image: url("../img/food/vegetables/potato.jpg"); }
+.tomato { background-image: url("../img/food/vegetables/tomato.jpg"); }
+.spinach { background-image: url("../img/food/vegetables/spinach.jpg"); }
+
+/* Grains */
+.barley { background-image: url("../img/food/grains/barley.jpg"); }
+.cornmeal { background-image: url("../img/food/grains/cornmeal.jpg"); }
+.rice-basmati { background-image: url("../img/food/grains/rice-basmati.jpg"); }
+.rice-brown { background-image: url("../img/food/grains/rice-brown.jpg"); }
+.rice-jasmine { background-image: url("../img/food/grains/rice-jasmine.jpg"); }
+.pasta { background-image: url("../img/food/grains/pasta.jpg"); }
+.ziti { background-image: url("../img/food/grains/ziti.jpg"); }
+
+/* Meats */
+.bacon { background-image: url("../img/food/meats/bacon.jpg"); }
+.beef-brisket { background-image: url("../img/food/meats/beef-brisket.jpg"); }
+.beef-ground { background-image: url("../img/food/meats/beef-ground.jpg"); }
+.bratwurst { background-image: url("../img/food/meats/bratwurst.jpg"); }
+.catfish { background-image: url("../img/food/meats/catfish.jpg"); }
+.chicken-breast { background-image: url("../img/food/meats/chicken-breast.jpg"); }
+.chicken-ground { background-image: url("../img/food/meats/chicken-ground.jpg"); }
+.chicken-whole { background-image: url("../img/food/meats/chicken-whole.jpg"); }
+.crab-meat { background-image: url("../img/food/meats/crab-meat.jpg"); }
+.duck-whole { background-image: url("../img/food/meats/duck-whole.jpg"); }
+.ham { background-image: url("../img/food/meats/ham.jpg"); }
+.lobster-tail { background-image: url("../img/food/meats/lobster-tail.jpg"); }
+.pork-chop { background-image: url("../img/food/meats/pork-chop.jpg"); }
+.pork-ground { background-image: url("../img/food/meats/pork-ground.jpg"); }
+.turkey-piece { background-image: url("../img/food/meats/turkey-piece.jpg"); }
+.turkey-ground { background-image: url("../img/food/meats/turkey-ground.jpg"); }
+.shrimp { background-image: url("../img/food/meats/shrimp.jpg"); }
+
+/* Sweets */
+.blackberry-jam { background-image: url("../img/food/sweets/blackberry-jam.jpg"); }
+.chocolate-baking { background-image: url("../img/food/sweets/chocolate-baking.jpg"); }
+.chocolate-dark { background-image: url("../img/food/sweets/chocolate-dark.jpg"); }
+.chocolate-white { background-image: url("../img/food/sweets/chocolate-white.jpg"); }
+.honey { background-image: url("../img/food/sweets/honey.jpg"); }
+.maple-syrup { background-image: url("../img/food/sweets/maple-syrup.jpg"); }
+.sugar-white { background-image: url("../img/food/sweets/sugar-white.jpg"); }
+.sugar-brown { background-image: url("../img/food/sweets/sugar-brown.jpg"); }
+.sugar-powdered { background-image: url("../img/food/sweets/sugar-powdered.jpg"); }
+.ice-cream-vanilla { background-image: url("../img/food/sweets/ice-cream-vanilla.jpg"); }
+
+/* Liquids */
+.beer { background-image: url("../img/food/liquids/beer.jpg"); }
+.soda { background-image: url("../img/food/liquids/soda.jpg"); }
+.coffee-ground { background-image: url("../img/food/liquids/coffee-ground.jpg"); }
+.water { background-image: url("../img/food/liquids/water.jpg"); }
+.vodka { background-image: url("../img/food/liquids/vodka.jpg"); }
+.wine-red { background-image: url("../img/food/liquids/wine-red.jpg"); }
+.wine-white { background-image: url("../img/food/liquids/wine-white.jpg"); }
