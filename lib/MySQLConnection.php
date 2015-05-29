@@ -26,4 +26,3 @@ class MySQLConnection {
 $db = MySQLConnection::makeConnection();
 
 ?>
-
