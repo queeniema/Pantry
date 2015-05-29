@@ -78,14 +78,6 @@ body {
     background-image: url("../img/plus-sign.jpg");
 }
 
-.description {
-    visibility: hidden;
-}
-
-.item:hover .description {
-    visibility: visible;
-}
-
 hr {
     margin: 0 auto;
     padding: 0;

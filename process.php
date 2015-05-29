@@ -56,6 +56,7 @@
             "expDate"           => $expirationdate,
             "quantity"          => $quantity,
             "foodCategories"    => $food_result['cat_name'],
+            "itemClass"         => $food_result['food_class'],
             "storageEnv"        => $storage_result['env_name']
         ));
     }
