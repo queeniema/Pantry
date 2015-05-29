@@ -10,7 +10,6 @@
             $name = "";
         $quantity = $_POST['quantity'];
         $storageenv = $_POST['storage-env'];
-        $food_cat_id = $_POST['food-category-id'];
 
         $query = "SELECT * FROM `environments` WHERE `env_id`=$storageenv";
         $result = $db->query($query) or die($db->error);
@@ -44,23 +43,19 @@
 
         $itemid = $db->insert_id;
 
+        $query = "SELECT * FROM foods F, categories C WHERE F.food_id=$foodid AND F.food_category = C.cat_id";
+        $result = $db->query($query) or die($db->error);
+        $food_result = $result->fetch_assoc();
         if($name == ""){
-            $query = "SELECT * FROM foods WHERE `food_id`=$foodid";
-            $result = $db->query($query) or die($db->error);
-            $food_result = $result->fetch_assoc();
             $name = $food_result['food_name'];
         }
-
-        $query = "SELECT * FROM categories WHERE `cat_id`=$food_cat_id";
-        $result = $db->query($query) or die($db->error);
-        $cat_result = $result->fetch_assoc();
 
         echo json_encode(array(
             "id"                => $itemid,
             "name"              => $name,
             "expDate"           => $expirationdate,
             "quantity"          => $quantity,
-            "foodCategories"    => $cat_result['cat_name'],
+            "foodCategories"    => $food_result['cat_name'],
             "storageEnv"        => $storage_result['env_name']
         ));
     }
