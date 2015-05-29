@@ -12,7 +12,7 @@
                 ORDER BY I.expiration_date DESC";
     $items_result = $db->query($query) or die($db->error);
 
-    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, E.env_name, F.food_name, C.cat_name
+    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, E.env_name, F.food_name, F.food_class, C.cat_name
                 FROM items I, environments E, foods F, categories C
                 WHERE I.user_id = " . $userid . " AND I.env_id = E.env_id AND F.food_id = I.food_id AND F.food_category = C.cat_id AND I.expired = true
                 ORDER BY I.expiration_date DESC";
@@ -148,7 +148,7 @@
                             "\" data-target=\"#view-item-modal\">" +
                             "<span class=\"description\">" + data.name + "</span></div>");
                         }
-                            
+
                         var $addItem = $("<div class=\"item circle remove\" id=\"add-item\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#add-item-modal\"></div>");
                         $items = $newItem.add($addItem);
                         $('#in-pantry-grid').append($items);
@@ -261,7 +261,7 @@
                         data-groups                 =   '["all", "<?php echo $row['cat_name']; ?>"]'
                         data-toggle                 =   "modal"
                         data-target                 =   "#view-item-modal">
-                        <?php 
+                        <?php
                             // check if item was manually entered so we can decide to show item name or not
                             if ($row['food_class'] == 'other') {
                                 echo "<span class=\"description\">" . $row['item_name'] . "</span>";
@@ -299,7 +299,7 @@
                         data-groups                 =   '["all", "<?php echo $row['cat_name']; ?>"]'
                         data-toggle                 =   "modal"
                         data-target                 =   "#view-item-modal">
-                        <?php 
+                        <?php
                             // check if item was manually entered so we can decide to show item name or not
                             if ($row['food_class'] == 'other') {
                                 echo "<span class=\"description\">" . $row['item_name'] . "</span>";

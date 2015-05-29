@@ -1,6 +1,6 @@
 <?php
     require('lib/MySQLConnection.php');
-    if($_GET['food-from-cat-id']){
+    if(isset($_GET['food-from-cat-id'])){
         $query = "SELECT * FROM foods
                   WHERE food_category = " . $_GET['food-from-cat-id'] . " AND food_id > " . $_GET['food-from-cat-id'] . "
                   ORDER BY food_id ASC";
@@ -15,7 +15,7 @@
         echo $html;
     }
 
-    if($_GET['sl-food-from-cat-id']){
+    if(isset($_GET['sl-food-from-cat-id'])){
         $query = "SELECT * FROM foods
                   WHERE food_category = " . $_GET['sl-food-from-cat-id'] . " AND food_id > " . $_GET['sl-food-from-cat-id'] . "
                   ORDER BY food_id ASC";

@@ -103,7 +103,7 @@ class Item extends AbstractSubject {
 	// Notify all observers when the item first expires
 	public function checkExpiry() {
 		// Only check if item hasn't already expired
-		if (!$expired) {
+		if (!$this->expired) {
 			$this->notify();
 		}
 	}

@@ -4,7 +4,7 @@
 
     $userid = $_SESSION['user-id'];
     // SQL query to retrieve all items in the database associated wih the current user
-    $query = "SELECT * FROM sl_items I WHERE I.user_id = " . $userid;
+    $query = "SELECT * FROM sl_items I, foods F WHERE I.user_id = " . $userid . " AND I.item_name = F.food_name";
     $result = $db->query($query) or die($db->error);
 
      // SQL query to retrieve all categories
@@ -36,6 +36,7 @@
     <link rel="stylesheet" href="css/landing-page.css" type="text/css">
     <link rel="stylesheet" href="css/pantry-page.css" type="text/css">
     <link rel="stylesheet" href="css/shopping-list-page.css" type="text/css">
+    <link rel="stylesheet" href="css/icons.css" type="text/css">
     <!-- Custom Fonts -->
     <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css" type="text/css">
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:100,300,500,700" type="text/css">
@@ -92,7 +93,7 @@
                     <li class="media">
                         <div class="media-left">
                             <a href="#">
-                                <img class="media-object" src="http://placehold.it/64x64" alt="...">
+                                <div class="media-object <?php echo $row['food_class']; ?>" style="width:64px;height:64px;background-size:contain;">&nbsp;</div>
                             </a>
                         </div>
                         <div class="media-body">
