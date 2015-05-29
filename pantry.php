@@ -6,7 +6,7 @@
     if(!isset($userid))
         header("Location: index.php");
     // SQL query to retrieve all items in the database associated wih the current user
-    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, E.env_name, F.food_name, C.cat_name
+    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, E.env_name, F.food_name, F.food_class, C.cat_name
                 FROM items I, environments E, foods F, categories C
                 WHERE I.user_id = " . $userid . " AND I.env_id = E.env_id AND F.food_id = I.food_id AND F.food_category = C.cat_id and I.expired = false
                 ORDER BY I.expiration_date DESC";
@@ -50,6 +50,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/landing-page.css" type="text/css">
     <link rel="stylesheet" href="css/pantry-page.css" type="text/css">
+    <link rel="stylesheet" href="css/icons.css" type="text/css">
     <!-- Custom Fonts --t
     <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css" type="text/css">
     <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:100,300,500,700" type="text/css">
@@ -122,7 +123,20 @@
                         var $addItem = $('#add-item');
                         $('#in-pantry-grid').shuffle('remove', $addItem);
 
-                        var $newItem = $("<div class=\"item green circle remove\" id=\"item-" + data.id +
+                        var $newItem = $("<div class=\"item green circle remove " + data.itemClass + "\" id=\"item-" + data.id +
+                            "\" data-item-id=\"" + data.id +
+                            "\" data-item-name=\"" + data.name +
+                            "\" data-item-expiration-date=\"" + data.expDate +
+                            "\" data-item-quantity=\"" + data.quantity +
+                            "\" data-item-categories=\"" + data.foodCategories +
+                            "\" data-item-storage-env=\"" + data.storageEnv +
+                            "\" data-groups='[\"all\", \""+data.foodCategories+"\"]'" +
+                            "\" data-toggle=\"modal\"" +
+                            "\" data-target=\"#view-item-modal\">");
+
+                        // for manually entered items, just show the name of the item instead of an image
+                        if (data.itemClass == "other") {
+                            var $newItem = $("<div class=\"item green circle remove " + data.itemClass + "\" id=\"item-" + data.id +
                             "\" data-item-id=\"" + data.id +
                             "\" data-item-name=\"" + data.name +
                             "\" data-item-expiration-date=\"" + data.expDate +
@@ -133,6 +147,8 @@
                             "\" data-toggle=\"modal\"" +
                             "\" data-target=\"#view-item-modal\">" +
                             "<span class=\"description\">" + data.name + "</span></div>");
+                        }
+                            
                         var $addItem = $("<div class=\"item circle remove\" id=\"add-item\" data-groups='[\"all\"]' data-toggle=\"modal\" data-target=\"#add-item-modal\"></div>");
                         $items = $newItem.add($addItem);
                         $('#in-pantry-grid').append($items);
@@ -235,7 +251,7 @@
                         <?php
                             if($row['item_name'] == "") $row['item_name'] = $row['food_name'];
                         ?>
-                    <div class="item <?php echo $row['item_name']; ?>" id="item-<?php echo $row['item_id']; ?>"
+                    <div class="item <?php echo $row['item_name']; ?> <?php echo $row['food_class']; ?>" id="item-<?php echo $row['item_id']; ?>"
                         data-item-id                =   "<?php echo $row['item_id']; ?>"
                         data-item-name              =   "<?php echo $row['item_name']; ?>"
                         data-item-expiration-date   =   "<?php echo $row['expiration_date']; ?>"
@@ -245,7 +261,12 @@
                         data-groups                 =   '["all", "<?php echo $row['cat_name']; ?>"]'
                         data-toggle                 =   "modal"
                         data-target                 =   "#view-item-modal">
-                        <span class="description"><?php echo $row['item_name']; ?></span>
+                        <?php 
+                            // check if item was manually entered so we can decide to show item name or not
+                            if ($row['food_class'] == 'other') {
+                                echo "<span class=\"description\">" . $row['item_name'] . "</span>";
+                            }
+                        ?>
                     </div>
                     <?php endif; ?>
                 <?php endwhile; ?>
@@ -268,7 +289,7 @@
                         <?php
                             if($row['item_name'] == "") $row['item_name'] = $row['food_name'];
                         ?>
-                    <div class="item <?php echo $row['item_name']; ?>" id="item-<?php echo $row['item_id']; ?>"
+                    <div class="item <?php echo $row['item_name']; ?> <?php echo $row['food_class']; ?>" id="item-<?php echo $row['item_id']; ?>"
                         data-item-id                =   "<?php echo $row['item_id']; ?>"
                         data-item-name              =   "<?php echo $row['item_name']; ?>"
                         data-item-expiration-date   =   "<?php echo $row['expiration_date']; ?>"
@@ -278,7 +299,12 @@
                         data-groups                 =   '["all", "<?php echo $row['cat_name']; ?>"]'
                         data-toggle                 =   "modal"
                         data-target                 =   "#view-item-modal">
-                        <span class="description"><?php echo $row['item_name']; ?></span>
+                        <?php 
+                            // check if item was manually entered so we can decide to show item name or not
+                            if ($row['food_class'] == 'other') {
+                                echo "<span class=\"description\">" . $row['item_name'] . "</span>";
+                            }
+                        ?>
                     </div>
                 <?php endwhile; ?>
                 <div class="item" id="add-item" data-groups='["all"]' data-toggle="modal" data-target="#add-item-modal"></div>
