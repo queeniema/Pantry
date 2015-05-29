@@ -23,12 +23,21 @@
         $username = $_POST['signup-username'];
         $email = $_POST['signup-email'];
         $password = $_POST['signup-password'];
-        $query = "INSERT INTO `users` (username, password, email) VALUES ('$username', '$password', '$email')";
 
+        // Check if username already exists
+        $query = "SELECT * FROM `users` WHERE username = '$username'";
         $result = $db->query($query);
-        if($result) {
-            $msg = "Your account was created successfully! Redirecting you to the home page...";
-            echo "<script>setTimeout(\"location.href = 'index.php';\",4000);</script>";
+        if ($result->num_rows) {
+            $msg = "Sorry, that username is already taken. Please choose another one.";
+        }
+        else {
+            $query = "INSERT INTO `users` (username, password, email) VALUES ('$username', '$password', '$email')";
+
+            $result = $db->query($query);
+            if($result) {
+                $msg = "Your account was created successfully! Redirecting you to the home page...";
+                echo "<script>setTimeout(\"location.href = 'index.php';\",4000);</script>";
+            }
         }
     }
 ?>
