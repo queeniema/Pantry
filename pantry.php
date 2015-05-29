@@ -344,10 +344,6 @@
                 <div class="modal-body step-2" data-step="2">
                     <div class="container-fluid">
                         <div id="item-info-container">
-                            <span class="form-label">Quantity:</span>
-                            <input id="quantity-input" name= "quantity" class="form-control" type="number" value="1" min="1" max="10" />
-                            <br/>
-
                             <span class="form-label">Category:</span>
                             <br/>
                             <div class="btn-group" style="width: 200px">
@@ -384,6 +380,9 @@
                 <div class="modal-body step-4" data-step="4">
                     <div class="container-fluid">
                         <div id="item-info-container">
+                            <span class="form-label">Quantity:</span>
+                            <input id="quantity-input" name= "quantity" class="form-control" type="number" value="1" min="1" max="10" />
+                            <br/>
                             <span class="form-label">Expiration Date (if any):</span>
                             <br/>
                             <input class="form-control" name="expiration-date" type="text" id="bs-datepicker">
