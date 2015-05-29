@@ -10,6 +10,19 @@
             $name = "";
         $quantity = $_POST['quantity'];
         $storageenv = $_POST['storage-env'];
+        $food_cat_id = $_POST['food-category-id'];
+
+        $query = "SELECT * FROM `environments` WHERE `env_id`=$storageenv";
+        $result = $db->query($query) or die($db->error);
+        $storage_result = $result->fetch_assoc();
+
+        if($storage_result['temperature'] <= 32)
+            $sqlenv = 'food_expire_freezer';
+        else if($storage_result['temperature'] <= 39)
+            $sqlenv = 'food_expire_fridge';
+        else
+            $sqlenv = 'food_expire_room';
+
         if(isset($_POST['item-name']) && $_POST['item-name'] != "")
             $foodid = $_POST['food-category-id']; // This because the food-category-id also is the same as the "other" related food item for the category
         else
@@ -22,7 +35,7 @@
                       WHERE food_id = ".$foodid;
             $food_result = $db->query($query) or die($db->error);
             $row = $food_result->fetch_assoc(); //need to figure out what expiration time to use based on storage env still
-            $expirationdate = date('Y-m-d', strtotime('+'.$row['food_expire_fridge'].' hour'));
+            $expirationdate = date('Y-m-d', strtotime('+'.$row[$sqlenv].' hour'));
         }
 
         $query = "INSERT INTO `items`(`user_id`, `item_name`, `food_id`, `expiration_date`, `quantity`, `env_id`)
@@ -31,17 +44,24 @@
 
         $itemid = $db->insert_id;
 
-        $query2 = "SELECT `env_name` FROM `environments` WHERE `env_id`=$storageenv";
-        $result2 = $db->query($query2) or die($db->error);
-        $row = $result2->fetch_assoc();
+        if($name == ""){
+            $query = "SELECT * FROM foods WHERE `food_id`=$foodid";
+            $result = $db->query($query) or die($db->error);
+            $food_result = $result->fetch_assoc();
+            $name = $food_result['food_name'];
+        }
+
+        $query = "SELECT * FROM categories WHERE `cat_id`=$food_cat_id";
+        $result = $db->query($query) or die($db->error);
+        $cat_result = $result->fetch_assoc();
 
         echo json_encode(array(
             "id"                => $itemid,
             "name"              => $name,
             "expDate"           => $expirationdate,
             "quantity"          => $quantity,
-            "foodCategories"    => $_POST['food-category-id'],
-            "storageEnv"        => $row['env_name']
+            "foodCategories"    => $cat_result['cat_name'],
+            "storageEnv"        => $storage_result['env_name']
         ));
     }
 

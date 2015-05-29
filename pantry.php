@@ -6,28 +6,30 @@
     if(!isset($userid))
         header("Location: index.php");
     // SQL query to retrieve all items in the database associated wih the current user
-    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, E.env_name
-                FROM items I, environments E
-                WHERE I.user_id = " . $userid . " AND I.env_id = E.env_id
+    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, E.env_name, F.food_name, C.cat_name
+                FROM items I, environments E, foods F, categories C
+                WHERE I.user_id = " . $userid . " AND I.env_id = E.env_id AND F.food_id = I.food_id AND F.food_category = C.cat_id and I.expired = false
                 ORDER BY I.expiration_date DESC";
     $items_result = $db->query($query) or die($db->error);
+
+    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity, E.env_name, F.food_name, C.cat_name
+                FROM items I, environments E, foods F, categories C
+                WHERE I.user_id = " . $userid . " AND I.env_id = E.env_id AND F.food_id = I.food_id AND F.food_category = C.cat_id AND I.expired = true
+                ORDER BY I.expiration_date DESC";
+    $expired_result = $db->query($query) or die($db->error);
 
     // SQL query to retrieve all storange environments in the database associated wih the current user
     $query = "SELECT * FROM environments WHERE user_id = ". $userid;
     $envs_result = $db->query($query) or die($db->error);
 
-    $query = "SELECT I.item_id, I.item_name, I.expiration_date, I.expired, I.quantity
-                FROM items I
-                WHERE I.user_id = " . $userid . " AND I.expired = TRUE
-                ORDER BY I.expiration_date DESC";
-    $expired_result = $db->query($query) or die($db->error);
-
     // SQL query to retrieve all categories
     $query = "SELECT * FROM categories ORDER BY cat_id ASC";
     $cat_result = $db->query($query) or die($db->error);
-    $cat_html = "";
+    $cat_form_html = "";
+    $cat_sort_html = '<li><a class="active" href="#" data-group="all">All</a></li>';
     while($row = $cat_result->fetch_assoc()){
-        $cat_html .= "<option value='".$row['cat_id']."'>".$row['cat_name']."</option>";
+        $cat_form_html .= "<option value='".$row['cat_id']."'>".$row['cat_name']."</option>";
+        $cat_sort_html .= '<li><a href="#" data-group="'.$row['cat_name'].'">'.$row['cat_name'].'</a></li>';
     }
 ?>
 
@@ -127,7 +129,7 @@
                             "\" data-item-quantity=\"" + data.quantity +
                             "\" data-item-categories=\"" + data.foodCategories +
                             "\" data-item-storage-env=\"" + data.storageEnv +
-                            "\" data-groups='[\"all\"]'" +
+                            "\" data-groups='[\"all\", \""+data.foodCategories+"\"]'" +
                             "\" data-toggle=\"modal\"" +
                             "\" data-target=\"#view-item-modal\">" +
                             "<span class=\"description\">" + data.name + "</span></div>");
@@ -223,32 +225,28 @@
     <h1 id="recently-expired-header">Recently Expired</h1>
     <div id="recently-expired-container" class="container-fluid">
         <ul id="recently-expired-filter" class="list-inline">
-            <li><a class="active" href="#" data-group="all">All</a></li>
-            <li><a href="#" data-group="dairy">Dairy</a></li>
-            <li><a href="#" data-group="fruits">Fruits</a></li>
-            <li><a href="#" data-group="grains-beans">Grains &amp; Beans</a></li>
-            <li><a href="#" data-group="meat-proteins">Meat &amp; Proteins</a></li>
-            <li><a href="#" data-group="sweets">Sweets</a></li>
-            <li><a href="#" data-group="vegetables">Vegetables</a></li>
-            <li><a href="#" data-group="liquids">Liquids</a></li>
+            <?php echo $cat_sort_html; ?>
         </ul>
 
         <div id="grid-wrapper">
             <div id="recently-expired-grid">
                 <?php while($row = $expired_result->fetch_assoc()) : ?>
-                    <?php if ((time() - strtotime($row['expiration_date'])) < (3600 * 24 * 7)): ?>
+                    <?php if ((time() - strtotime($row['expiration_date'])) < (3600 * 24 * 7)) : ?>
                         <?php
-                            $categories = explode(',', $row['categories']);
-                            $datagroups = array();
-                            foreach ($categories as $category) {
-                                $datagroups[] = "\"" . $category . "\"";
-                            }
-                            $datagroups = implode(',', $datagroups);
+                            if($row['item_name'] == "") $row['item_name'] = $row['food_name'];
                         ?>
-                        <div class="item <?php echo $row['item_name']; ?>" id="item-<?php echo $row['item_id']; ?>"
-                            data-groups='[<?php echo $datagroups; ?>]'>
-                            <span class="description"><?php echo $row['item_name']; ?></span>
-                        </div>
+                    <div class="item <?php echo $row['item_name']; ?>" id="item-<?php echo $row['item_id']; ?>"
+                        data-item-id                =   "<?php echo $row['item_id']; ?>"
+                        data-item-name              =   "<?php echo $row['item_name']; ?>"
+                        data-item-expiration-date   =   "<?php echo $row['expiration_date']; ?>"
+                        data-item-quantity          =   "<?php echo $row['quantity']; ?>"
+                        data-item-categories        =   "<?php echo $row['cat_name']; ?>"
+                        data-item-storage-env       =   "<?php echo $row['env_name']; ?>"
+                        data-groups                 =   '["all", "<?php echo $row['cat_name']; ?>"]'
+                        data-toggle                 =   "modal"
+                        data-target                 =   "#view-item-modal">
+                        <span class="description"><?php echo $row['item_name']; ?></span>
+                    </div>
                     <?php endif; ?>
                 <?php endwhile; ?>
             </div>
@@ -260,34 +258,28 @@
     <h1 id="in-pantry-header">In Pantry</h1>
     <div id="in-pantry-container" class="container-fluid">
         <ul id="in-pantry-filter" class="list-inline">
-            <li><a class="active" href="#" data-group="all">All</a></li>
-            <li><a href="#" data-group="dairy">Dairy</a></li>
-            <li><a href="#" data-group="fruits">Fruits</a></li>
-            <li><a href="#" data-group="grains-beans">Grains &amp; Beans</a></li>
-            <li><a href="#" data-group="meat-proteins">Meat &amp; Proteins</a></li>
-            <li><a href="#" data-group="sweets">Sweets</a></li>
-            <li><a href="#" data-group="vegetables">Vegetables</a></li>
-            <li><a href="#" data-group="liquids">Liquids</a></li>
+            <?php echo $cat_sort_html; ?>
         </ul>
 
         <div id="grid-wrapper">
             <div id="in-pantry-grid" class="row">
                 <!-- Populate grid dynamically based on items in the database -->
                 <?php while($row = $items_result->fetch_assoc()) : ?>
-                    <?php if (!$row['expired']) : ?>
+                        <?php
+                            if($row['item_name'] == "") $row['item_name'] = $row['food_name'];
+                        ?>
                     <div class="item <?php echo $row['item_name']; ?>" id="item-<?php echo $row['item_id']; ?>"
                         data-item-id                =   "<?php echo $row['item_id']; ?>"
                         data-item-name              =   "<?php echo $row['item_name']; ?>"
                         data-item-expiration-date   =   "<?php echo $row['expiration_date']; ?>"
                         data-item-quantity          =   "<?php echo $row['quantity']; ?>"
-                        data-item-categories        =   "<?php echo $row['categories']; ?>"
+                        data-item-categories        =   "<?php echo $row['cat_name']; ?>"
                         data-item-storage-env       =   "<?php echo $row['env_name']; ?>"
-                        data-groups                 =   '["all", "meat-proteins"]'
+                        data-groups                 =   '["all", "<?php echo $row['cat_name']; ?>"]'
                         data-toggle                 =   "modal"
                         data-target                 =   "#view-item-modal">
                         <span class="description"><?php echo $row['item_name']; ?></span>
                     </div>
-                    <?php endif; ?>
                 <?php endwhile; ?>
                 <div class="item" id="add-item" data-groups='["all"]' data-toggle="modal" data-target="#add-item-modal"></div>
             </div>
@@ -305,7 +297,7 @@
                     <div id="view-item-container">
                         <p>Expiration Date: <span id="item-expiration-date-view"></span></p><br/>
                         <p>Quantity: <span id="item-quantity-view"></span></p><br/>
-                        <p>Categories: <span id="item-categories-view"></span></p><br/>
+                        <p>Category: <span id="item-categories-view"></span></p><br/>
                         <p>Storage Environment: <span id="item-storage-env-view"></span></p>
                         <form class="modal remove">
                             <input class="form-control" type="hidden" name="remove-item-id" id="remove-item-id"/>
@@ -348,7 +340,7 @@
                             <br/>
                             <div class="btn-group" style="width: 200px">
                                 <select id="select-food-catagories" onChange="handleCategoryChange(this);">
-                                    <?php echo $cat_html; ?>
+                                    <?php echo $cat_form_html; ?>
                                 </select>
                             </div>
                             <br/><br/><br/>
@@ -370,7 +362,7 @@
 
                             <div class="btn-group" style="width: 200px">
                                 <select name="food-category-id" id="select-food-category-id">
-                                    <?php echo $cat_html; ?>
+                                    <?php echo $cat_form_html; ?>
                                 </select>
                             </div>
                             <br/><br/><br/>
